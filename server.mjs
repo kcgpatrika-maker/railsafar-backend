@@ -224,6 +224,9 @@ app.post("/rail-query", async (req, res) => {
 
       const html =
         await response.text();
+      console.log(
+  html.substring(0, 5000)
+);
 
       const liveData =
         extractLiveStatus(html);
