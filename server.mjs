@@ -116,7 +116,43 @@ app.post("/rail-query", async (req, res) => {
     });
   }
 });
+app.get("/live-test", async (req, res) => {
 
+  try{
+
+    const query =
+      "12413 train running status";
+
+    const url =
+
+      `https://r.jina.ai/http://www.google.com/search?q=${encodeURIComponent(query)}`;
+
+    const response =
+      await fetch(url);
+
+    const text =
+      await response.text();
+
+    // SMALL RESPONSE
+
+    res.json({
+
+      success:true,
+
+      preview:
+        text.substring(0, 3000)
+    });
+
+  }catch(error){
+
+    res.json({
+
+      success:false,
+
+      error:error.message
+    });
+  }
+});
 const PORT =
   process.env.PORT || 3000;
 
