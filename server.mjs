@@ -7,108 +7,275 @@ app.use(cors());
 
 app.use(express.json());
 
-app.get("/", (req, res) => {
+// TRAIN DATABASE
 
-  res.send("RailSafar Backend Running");
-});
+const trains = [
+
+  {
+
+    number:"14864",
+
+    hindi:"मरुधर एक्सप्रेस",
+
+    english:"Marudhar Express",
+
+    aliases:[
+      "मरुधर",
+      "मरुधर ट्रेन"
+    ],
+
+    stations:[
+
+      {
+        name:"जयपुर",
+        code:"JP"
+      },
+
+      {
+        name:"अजमेर",
+        code:"AII"
+      }
+
+    ]
+  },
+
+  {
+
+    number:"12413",
+
+    hindi:"पूजा एक्सप्रेस",
+
+    english:"Pooja Express",
+
+    aliases:[
+      "पूजा एक्सप्रेस",
+      "पूजा",
+      "अमृतसर एक्सप्रेस",
+      "अमृतसर"
+    ],
+
+    stations:[
+
+      {
+        name:"जयपुर",
+        code:"JP"
+      }
+
+    ]
+  }
+
+];
+
+// LIVE PARSER
+
+function extractLiveStatus(html){
+
+  const lower =
+    html.toLowerCase();
+
+  // DELAY
+
+  const delayMatch =
+
+    html.match(
+      /Delay\s+(\d+)m/i
+    );
+
+  if(delayMatch){
+
+    return {
+
+      liveStatus:
+        `⏱️ ट्रेन लगभग ${delayMatch[1]} मिनट देरी से चल रही है`,
+
+      delayMinutes:
+        parseInt(delayMatch[1])
+    };
+  }
+
+  // RIGHT TIME
+
+  if(
+    lower.includes("right time")
+  ){
+
+    return {
+
+      liveStatus:
+        "✅ ट्रेन समय पर चल रही है",
+
+      delayMinutes:0
+    };
+  }
+
+  // FALLBACK
+
+  return {
+
+    liveStatus:
+      "📡 लाइव स्थिति स्पष्ट नहीं मिली",
+
+    delayMinutes:0
+  };
+}
+
+// MAIN ROUTE
 
 app.post("/rail-query", async (req, res) => {
 
   try{
 
     const query =
-      (req.body.query || "")
-      .toLowerCase();
+      req.body.query || "";
 
-    let train = null;
+    // TRAIN FIND
 
-    // TRAIN MATCH
+    let matchedTrain = null;
 
-    if(
-      query.includes("अमृतसर") ||
-      query.includes("अमरसर")
-    ){
+    for(const train of trains){
 
-      train = {
+      if(
+        query.includes(train.hindi)
+      ){
 
-        number:"12413",
+        matchedTrain = train;
 
-        name:"अमृतसर एक्सप्रेस",
+        break;
+      }
 
-        slug:"Amritsar-Express-12413"
-      };
+      if(
+        query.includes(train.english)
+      ){
+
+        matchedTrain = train;
+
+        break;
+      }
+
+      for(const alias of train.aliases){
+
+        if(
+          query.includes(alias)
+        ){
+
+          matchedTrain = train;
+
+          break;
+        }
+      }
+
+      if(matchedTrain) break;
     }
 
-    else if(
-      query.includes("मरुधर")
-    ){
+    // TRAIN NOT FOUND
 
-      train = {
+    if(!matchedTrain){
 
-        number:"14864",
+      return res.json({
 
-        name:"मरुधर एक्सप्रेस",
+        success:false,
 
-        slug:"Marudhar-Express-14864"
-      };
+        message:
+          "Train not found"
+      });
     }
 
-    // STATION MATCH
+    // STATION FIND
 
-    let station = null;
+    let matchedStation = null;
 
-    if(
-      query.includes("जयपुर")
-    ){
+    for(const station of matchedTrain.stations){
 
-      station = {
+      if(
+        query.includes(station.name)
+      ){
 
-        code:"JP",
+        matchedStation = station;
 
-        name:"जयपुर जंक्शन"
-      };
+        break;
+      }
     }
 
-    else if(
-      query.includes("अजमेर")
-    ){
+    // DEFAULT STATION
 
-      station = {
+    if(!matchedStation){
 
-        code:"AII",
-
-        name:"अजमेर जंक्शन"
-      };
+      matchedStation =
+        matchedTrain.stations[0];
     }
 
-    // INTENT
+    // LIVE FETCH
 
-    let intent = "arrival";
+    let liveStatus =
+      "📡 लाइव स्थिति स्पष्ट नहीं मिली";
 
-    if(
-      query.includes("जाएगी") ||
-      query.includes("निकलेगी")
-    ){
+    let delayMinutes = 0;
 
-      intent = "departure";
+    try{
+
+      const liveUrl =
+
+        `https://www.railyatri.in/live-train-status/${matchedTrain.number}`;
+
+      console.log(liveUrl);
+
+      const response =
+        await fetch(liveUrl);
+
+      const html =
+        await response.text();
+
+      const liveData =
+        extractLiveStatus(html);
+
+      liveStatus =
+        liveData.liveStatus;
+
+      delayMinutes =
+        liveData.delayMinutes;
+
+    }catch(error){
+
+      console.log(
+        "Live fetch failed"
+      );
     }
+
+    // RESPONSE
 
     res.json({
 
       success:true,
 
-      originalQuery:query,
+      train:{
+        number:
+          matchedTrain.number,
 
-      train,
+        hindi:
+          matchedTrain.hindi,
 
-      station,
+        english:
+          matchedTrain.english
+      },
 
-      intent
+      station:{
+        name:
+          matchedStation.name,
+
+        code:
+          matchedStation.code
+      },
+
+      liveStatus:
+        liveStatus,
+
+      delayMinutes:
+        delayMinutes
     });
 
   }catch(error){
 
-    res.status(500).json({
+    res.json({
 
       success:false,
 
@@ -116,49 +283,24 @@ app.post("/rail-query", async (req, res) => {
     });
   }
 });
-app.get("/live-test", async (req, res) => {
 
-  try{
+// ROOT
 
-    const query =
-      "12413 train running status";
+app.get("/", (req, res) => {
 
-    const url =
-
-      `https://r.jina.ai/http://www.google.com/search?q=${encodeURIComponent(query)}`;
-
-    const response =
-      await fetch(url);
-
-    const text =
-      await response.text();
-
-    // SMALL RESPONSE
-
-    res.json({
-
-      success:true,
-
-      preview:
-        text.substring(0, 3000)
-    });
-
-  }catch(error){
-
-    res.json({
-
-      success:false,
-
-      error:error.message
-    });
-  }
+  res.send(
+    "RailSafar Backend Running"
+  );
 });
+
+// PORT
+
 const PORT =
   process.env.PORT || 3000;
 
 app.listen(PORT, () => {
 
   console.log(
-    `RailSafar backend running on ${PORT}`
+    `Server running on ${PORT}`
   );
 });
