@@ -48,10 +48,8 @@ const trains = [
     english:"Pooja Express",
 
     aliases:[
-      "पूजा एक्सप्रेस",
       "पूजा",
-      "अमृतसर एक्सप्रेस",
-      "अमृतसर"
+      "पूजा एक्सप्रेस"
     ],
 
     stations:[
@@ -73,23 +71,56 @@ function extractLiveStatus(html){
   const lower =
     html.toLowerCase();
 
-  // DELAY
+  console.log(
+    "HTML LENGTH:",
+    html.length
+  );
 
-  const delayMatch =
+  // DEBUG PREVIEW
+
+  console.log(
+
+    html.substring(0, 3000)
+
+  );
+
+  // DELAY 37m
+
+  let match =
 
     html.match(
-      /Delay\s+(\d+)m/i
+      /Delay\s*(\d+)m/i
     );
 
-  if(delayMatch){
+  if(match){
 
     return {
 
       liveStatus:
-        `⏱️ ट्रेन लगभग ${delayMatch[1]} मिनट देरी से चल रही है`,
+        `⏱️ ट्रेन लगभग ${match[1]} मिनट देरी से चल रही है`,
 
       delayMinutes:
-        parseInt(delayMatch[1])
+        parseInt(match[1])
+    };
+  }
+
+  // DELAYED BY
+
+  match =
+
+    html.match(
+      /delayed\s*by\s*(\d+)/i
+    );
+
+  if(match){
+
+    return {
+
+      liveStatus:
+        `⏱️ ट्रेन लगभग ${match[1]} मिनट देरी से चल रही है`,
+
+      delayMinutes:
+        parseInt(match[1])
     };
   }
 
@@ -108,16 +139,123 @@ function extractLiveStatus(html){
     };
   }
 
+  // ON TIME
+
+  if(
+    lower.includes("on time")
+  ){
+
+    return {
+
+      liveStatus:
+        "✅ ट्रेन समय पर चल रही है",
+
+      delayMinutes:0
+    };
+  }
+
+  // CANCELLED
+
+  if(
+    lower.includes("cancelled")
+  ){
+
+    return {
+
+      liveStatus:
+        "❌ ट्रेन रद्द दिखाई दे रही है",
+
+      delayMinutes:0
+    };
+  }
+
+  // RESCHEDULED
+
+  if(
+    lower.includes("rescheduled")
+  ){
+
+    return {
+
+      liveStatus:
+        "🚨 ट्रेन पुनर्निर्धारित दिखाई दे रही है",
+
+      delayMinutes:120
+    };
+  }
+
   // FALLBACK
 
   return {
 
     liveStatus:
-      "📡 लाइव स्थिति स्पष्ट नहीं मिली",
+      "📡 लाइव स्थिति नहीं पढ़ी जा सकी",
 
     delayMinutes:0
   };
 }
+
+// ROOT
+
+app.get("/", (req, res) => {
+
+  res.send(
+    "RailSafar Backend Running"
+  );
+});
+
+// DEBUG ROUTE
+
+app.get("/debug-train/:number", async (req, res) => {
+
+  try{
+
+    const number =
+      req.params.number;
+
+    const liveUrl =
+
+      `https://www.railyatri.in/live-train-status/${number}`;
+
+    console.log(
+      "FETCHING:",
+      liveUrl
+    );
+
+    const response =
+      await fetch(liveUrl);
+
+    const html =
+      await response.text();
+
+    const parsed =
+      extractLiveStatus(html);
+
+    res.json({
+
+      success:true,
+
+      train:number,
+
+      htmlLength:
+        html.length,
+
+      preview:
+        html.substring(0, 2000),
+
+      parsed
+    });
+
+  }catch(error){
+
+    res.json({
+
+      success:false,
+
+      error:error.message
+    });
+  }
+});
 
 // MAIN ROUTE
 
@@ -127,6 +265,11 @@ app.post("/rail-query", async (req, res) => {
 
     const query =
       req.body.query || "";
+
+    console.log(
+      "QUERY:",
+      query
+    );
 
     // TRAIN FIND
 
@@ -167,7 +310,7 @@ app.post("/rail-query", async (req, res) => {
       if(matchedTrain) break;
     }
 
-    // TRAIN NOT FOUND
+    // NOT FOUND
 
     if(!matchedTrain){
 
@@ -182,7 +325,9 @@ app.post("/rail-query", async (req, res) => {
 
     // STATION FIND
 
-    let matchedStation = null;
+    let matchedStation =
+
+      matchedTrain.stations[0];
 
     for(const station of matchedTrain.stations){
 
@@ -190,57 +335,51 @@ app.post("/rail-query", async (req, res) => {
         query.includes(station.name)
       ){
 
-        matchedStation = station;
+        matchedStation =
+          station;
 
         break;
       }
     }
 
-    // DEFAULT STATION
-
-    if(!matchedStation){
-
-      matchedStation =
-        matchedTrain.stations[0];
-    }
-
-    // LIVE FETCH
+    // LIVE STATUS
 
     let liveStatus =
-      "📡 लाइव स्थिति स्पष्ट नहीं मिली";
+      "📡 लाइव जानकारी नहीं मिली";
 
     let delayMinutes = 0;
 
+    let sourceUrl =
+
+      `https://www.railyatri.in/live-train-status/${matchedTrain.number}`;
+
     try{
 
-      const liveUrl =
-
-        `https://www.railyatri.in/live-train-status/${matchedTrain.number}`;
-
-      console.log(liveUrl);
+      console.log(
+        "LIVE URL:",
+        sourceUrl
+      );
 
       const response =
-        await fetch(liveUrl);
+        await fetch(sourceUrl);
 
       const html =
         await response.text();
-      console.log(
-  html.substring(0, 5000)
-);
 
-      const liveData =
+      const parsed =
         extractLiveStatus(html);
 
       liveStatus =
-        liveData.liveStatus;
+        parsed.liveStatus;
 
       delayMinutes =
-        liveData.delayMinutes;
+        parsed.delayMinutes;
 
     }catch(error){
 
       console.log(
-        "Live fetch failed"
+        "LIVE FETCH ERROR:",
+        error.message
       );
     }
 
@@ -251,6 +390,7 @@ app.post("/rail-query", async (req, res) => {
       success:true,
 
       train:{
+
         number:
           matchedTrain.number,
 
@@ -262,6 +402,7 @@ app.post("/rail-query", async (req, res) => {
       },
 
       station:{
+
         name:
           matchedStation.name,
 
@@ -269,11 +410,9 @@ app.post("/rail-query", async (req, res) => {
           matchedStation.code
       },
 
-      liveStatus:
-        liveStatus,
-
-      delayMinutes:
-        delayMinutes
+      liveStatus,
+      delayMinutes,
+      sourceUrl
     });
 
   }catch(error){
@@ -287,16 +426,7 @@ app.post("/rail-query", async (req, res) => {
   }
 });
 
-// ROOT
-
-app.get("/", (req, res) => {
-
-  res.send(
-    "RailSafar Backend Running"
-  );
-});
-
-// PORT
+// START SERVER
 
 const PORT =
   process.env.PORT || 3000;
@@ -304,6 +434,6 @@ const PORT =
 app.listen(PORT, () => {
 
   console.log(
-    `Server running on ${PORT}`
+    `RailSafar backend running on ${PORT}`
   );
 });
