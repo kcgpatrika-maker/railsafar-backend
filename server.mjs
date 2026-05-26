@@ -28,12 +28,16 @@ const trains = [
 
       {
         name:"जयपुर",
-        code:"JP"
+        code:"JP",
+        arrival:"01:15 AM",
+        departure:"01:25 AM"
       },
 
       {
         name:"अजमेर",
-        code:"AII"
+        code:"AII",
+        arrival:"11:20 PM",
+        departure:"11:30 PM"
       }
 
     ]
@@ -56,7 +60,9 @@ const trains = [
 
       {
         name:"जयपुर",
-        code:"JP"
+        code:"JP",
+        arrival:"07:45 PM",
+        departure:"07:50 PM"
       }
 
     ]
@@ -64,27 +70,14 @@ const trains = [
 
 ];
 
-// LIVE PARSER
+// LIVE STATUS PARSER
 
 function extractLiveStatus(html){
 
   const lower =
     html.toLowerCase();
 
-  console.log(
-    "HTML LENGTH:",
-    html.length
-  );
-
-  // DEBUG PREVIEW
-
-  console.log(
-
-    html.substring(0, 3000)
-
-  );
-
-  // DELAY 37m
+  // DELAY XXm
 
   let match =
 
@@ -104,7 +97,7 @@ function extractLiveStatus(html){
     };
   }
 
-  // DELAYED BY
+  // DELAYED BY XX
 
   match =
 
@@ -184,12 +177,57 @@ function extractLiveStatus(html){
     };
   }
 
-  // FALLBACK
+  // REACHED
+
+  if(
+    lower.includes("has reached")
+  ){
+
+    return {
+
+      liveStatus:
+        "📍 ट्रेन स्टेशन पहुंच चुकी है",
+
+      delayMinutes:0
+    };
+  }
+
+  // DEPARTED
+
+  if(
+    lower.includes("departed")
+  ){
+
+    return {
+
+      liveStatus:
+        "🚆 ट्रेन स्टेशन से निकल चुकी है",
+
+      delayMinutes:0
+    };
+  }
+
+  // PLATFORM
+
+  if(
+    lower.includes("platform")
+  ){
+
+    return {
+
+      liveStatus:
+        "🚉 ट्रेन स्टेशन पर उपलब्ध दिखाई दे रही है",
+
+      delayMinutes:0
+    };
+  }
+
+  // DEFAULT
 
   return {
 
     liveStatus:
-      "📡 लाइव स्थिति नहीं पढ़ी जा सकी",
+      "📡 लाइव स्थिति प्राप्त नहीं हो सकी",
 
     delayMinutes:0
   };
@@ -202,59 +240,6 @@ app.get("/", (req, res) => {
   res.send(
     "RailSafar Backend Running"
   );
-});
-
-// DEBUG ROUTE
-
-app.get("/debug-train/:number", async (req, res) => {
-
-  try{
-
-    const number =
-      req.params.number;
-
-    const liveUrl =
-
-      `https://www.railyatri.in/live-train-status/${number}`;
-
-    console.log(
-      "FETCHING:",
-      liveUrl
-    );
-
-    const response =
-      await fetch(liveUrl);
-
-    const html =
-      await response.text();
-
-    const parsed =
-      extractLiveStatus(html);
-
-    res.json({
-
-      success:true,
-
-      train:number,
-
-      htmlLength:
-        html.length,
-
-      preview:
-        html.substring(0, 2000),
-
-      parsed
-    });
-
-  }catch(error){
-
-    res.json({
-
-      success:false,
-
-      error:error.message
-    });
-  }
 });
 
 // MAIN ROUTE
@@ -310,7 +295,7 @@ app.post("/rail-query", async (req, res) => {
       if(matchedTrain) break;
     }
 
-    // NOT FOUND
+    // TRAIN NOT FOUND
 
     if(!matchedTrain){
 
@@ -326,7 +311,6 @@ app.post("/rail-query", async (req, res) => {
     // STATION FIND
 
     let matchedStation =
-
       matchedTrain.stations[0];
 
     for(const station of matchedTrain.stations){
@@ -342,21 +326,21 @@ app.post("/rail-query", async (req, res) => {
       }
     }
 
-    // LIVE STATUS
+    // LIVE FETCH
 
     let liveStatus =
-      "📡 लाइव जानकारी नहीं मिली";
+      "📡 लाइव जानकारी उपलब्ध नहीं है";
 
     let delayMinutes = 0;
 
-    let sourceUrl =
+    const sourceUrl =
 
       `https://www.railyatri.in/live-train-status/${matchedTrain.number}`;
 
     try{
 
       console.log(
-        "LIVE URL:",
+        "FETCH:",
         sourceUrl
       );
 
@@ -378,7 +362,7 @@ app.post("/rail-query", async (req, res) => {
     }catch(error){
 
       console.log(
-        "LIVE FETCH ERROR:",
+        "LIVE ERROR:",
         error.message
       );
     }
@@ -407,7 +391,13 @@ app.post("/rail-query", async (req, res) => {
           matchedStation.name,
 
         code:
-          matchedStation.code
+          matchedStation.code,
+
+        arrival:
+          matchedStation.arrival,
+
+        departure:
+          matchedStation.departure
       },
 
       liveStatus,
@@ -426,7 +416,7 @@ app.post("/rail-query", async (req, res) => {
   }
 });
 
-// START SERVER
+// START
 
 const PORT =
   process.env.PORT || 3000;
