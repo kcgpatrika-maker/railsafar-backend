@@ -29,8 +29,8 @@ const trains = [
       {
         name:"जयपुर",
         code:"JP",
-        arrival:"01:15 AM",
-        departure:"01:25 AM"
+        arrival:"01:35 AM",
+        departure:"01:45 AM"
       },
 
       {
@@ -61,8 +61,8 @@ const trains = [
       {
         name:"जयपुर",
         code:"JP",
-        arrival:"07:45 PM",
-        departure:"07:50 PM"
+        arrival:"04:00 PM",
+        departure:"04:10 PM"
       }
 
     ]
