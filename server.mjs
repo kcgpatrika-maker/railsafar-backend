@@ -352,6 +352,13 @@ app.post("/rail-query", async (req, res) => {
 
       const parsed =
         extractLiveStatus(html);
+      console.log(
+
+  "PARSED DATA:",
+
+  JSON.stringify(parsed, null, 2)
+
+);
 
       liveStatus =
         parsed.liveStatus;
@@ -366,6 +373,20 @@ app.post("/rail-query", async (req, res) => {
         error.message
       );
     }
+    console.log(
+
+  "FINAL RESPONSE:",
+
+  JSON.stringify({
+
+    train:matchedTrain.hindi,
+    station:matchedStation.name,
+    liveStatus,
+    delayMinutes
+
+  }, null, 2)
+
+);
 
     // RESPONSE
 
