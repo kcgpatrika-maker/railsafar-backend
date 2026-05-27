@@ -114,38 +114,10 @@ function extractLiveStatus(html){
     }
   }
 
-  // FOUND DELAY
-
-  if(maxDelay > 0){
-
-    return {
-
-      liveStatus:
-        `⏱️ ट्रेन लगभग ${maxDelay} मिनट देरी से चल रही है`,
-
-      delayMinutes:
-        maxDelay
-    };
-  }
-
-  // RIGHT TIME
+    // ONLY IF NO DELAY FOUND
 
   if(
-    lower.includes("right time")
-  ){
-
-    return {
-
-      liveStatus:
-        "✅ ट्रेन समय पर चल रही है",
-
-      delayMinutes:0
-    };
-  }
-
-  // ON TIME
-
-  if(
+    lower.includes("right time") ||
     lower.includes("on time")
   ){
 
@@ -158,6 +130,7 @@ function extractLiveStatus(html){
     };
   }
 
+  
   // CANCELLED
 
   if(
