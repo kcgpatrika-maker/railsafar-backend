@@ -189,6 +189,35 @@ function extractLiveStatus(html){
     delayMinutes:0
   };
 }
+// EXTRA FEATURES ROUTES
+
+app.get("/open-pnr", (req, res) => {
+
+  res.redirect(
+    "https://www.railyatri.in/pnr-status"
+  );
+});
+
+app.get("/open-ticket", (req, res) => {
+
+  res.redirect(
+    "https://www.irctc.co.in"
+  );
+});
+
+app.get("/open-timetable", (req, res) => {
+
+  res.redirect(
+    "https://enquiry.indianrail.gov.in/mntes/"
+  );
+});
+
+app.get("/open-railwiki", (req, res) => {
+
+  res.redirect(
+    "https://en.wikipedia.org/wiki/Indian_Railways"
+  );
+});
 // ROOT
 
 app.get("/", (req, res) => {
