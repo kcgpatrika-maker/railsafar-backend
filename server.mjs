@@ -77,43 +77,54 @@ function extractLiveStatus(html){
   const lower =
     html.toLowerCase();
 
-  // DELAY XXm
+  console.log(
+    "HTML LENGTH:",
+    html.length
+  );
 
-  let match =
+  // CURRENT DELAY BLOCK
 
-    html.match(
-      /Delay\s*(\d+)m/i
-    );
+  const delayMatches = [
 
-  if(match){
+    ...html.matchAll(
+      /(\d+)\s*(min|m)\s*late/gi
+    )
 
-    return {
+  ];
 
-      liveStatus:
-        `⏱️ ट्रेन लगभग ${match[1]} मिनट देरी से चल रही है`,
+  console.log(
+    "DELAY MATCHES:",
+    delayMatches.map(
+      m => m[0]
+    )
+  );
 
-      delayMinutes:
-        parseInt(match[1])
-    };
+  // PICK BIGGEST DELAY
+
+  let maxDelay = 0;
+
+  for(const match of delayMatches){
+
+    const mins =
+      parseInt(match[1]);
+
+    if(mins > maxDelay){
+
+      maxDelay = mins;
+    }
   }
 
-  // DELAYED BY XX
+  // FOUND DELAY
 
-  match =
-
-    html.match(
-      /delayed\s*by\s*(\d+)/i
-    );
-
-  if(match){
+  if(maxDelay > 0){
 
     return {
 
       liveStatus:
-        `⏱️ ट्रेन लगभग ${match[1]} मिनट देरी से चल रही है`,
+        `⏱️ ट्रेन लगभग ${maxDelay} मिनट देरी से चल रही है`,
 
       delayMinutes:
-        parseInt(match[1])
+        maxDelay
     };
   }
 
@@ -177,57 +188,12 @@ function extractLiveStatus(html){
     };
   }
 
-  // REACHED
-
-  if(
-    lower.includes("has reached")
-  ){
-
-    return {
-
-      liveStatus:
-        "📍 ट्रेन स्टेशन पहुंच चुकी है",
-
-      delayMinutes:0
-    };
-  }
-
-  // DEPARTED
-
-  if(
-    lower.includes("departed")
-  ){
-
-    return {
-
-      liveStatus:
-        "🚆 ट्रेन स्टेशन से निकल चुकी है",
-
-      delayMinutes:0
-    };
-  }
-
-  // PLATFORM
-
-  if(
-    lower.includes("platform")
-  ){
-
-    return {
-
-      liveStatus:
-        "🚉 ट्रेन स्टेशन पर उपलब्ध दिखाई दे रही है",
-
-      delayMinutes:0
-    };
-  }
-
-  // DEFAULT
+  // FALLBACK
 
   return {
 
     liveStatus:
-      "📡 लाइव स्थिति प्राप्त नहीं हो सकी",
+      "📡 लाइव स्थिति नहीं पढ़ी जा सकी",
 
     delayMinutes:0
   };
