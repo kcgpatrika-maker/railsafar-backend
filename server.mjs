@@ -82,7 +82,7 @@ function extractLiveStatus(html){
     html.length
   );
 
-  // CURRENT DELAY BLOCK
+  // FIND ALL DELAYS
 
   const delayMatches = [
 
@@ -93,19 +93,23 @@ function extractLiveStatus(html){
   ];
 
   console.log(
+
     "DELAY MATCHES:",
+
     delayMatches.map(
       m => m[0]
     )
+
   );
 
-  // PICK BIGGEST DELAY
+  // BIGGEST DELAY
 
   let maxDelay = 0;
 
   for(const match of delayMatches){
 
     const mins =
+
       parseInt(match[1]);
 
     if(mins > maxDelay){
@@ -114,23 +118,20 @@ function extractLiveStatus(html){
     }
   }
 
-    // ONLY IF NO DELAY FOUND
+  // DELAY FOUND
 
-  if(
-    lower.includes("right time") ||
-    lower.includes("on time")
-  ){
+  if(maxDelay > 0){
 
     return {
 
       liveStatus:
-        "✅ ट्रेन समय पर चल रही है",
+        `⏱️ ट्रेन लगभग ${maxDelay} मिनट देरी से चल रही है`,
 
-      delayMinutes:0
+      delayMinutes:
+        maxDelay
     };
   }
 
-  
   // CANCELLED
 
   if(
@@ -161,6 +162,23 @@ function extractLiveStatus(html){
     };
   }
 
+  // ON TIME
+
+  if(
+    lower.includes("right time") ||
+
+    lower.includes("on time")
+  ){
+
+    return {
+
+      liveStatus:
+        "✅ ट्रेन समय पर चल रही है",
+
+      delayMinutes:0
+    };
+  }
+
   // FALLBACK
 
   return {
@@ -171,7 +189,6 @@ function extractLiveStatus(html){
     delayMinutes:0
   };
 }
-
 // ROOT
 
 app.get("/", (req, res) => {
