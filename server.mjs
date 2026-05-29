@@ -192,16 +192,58 @@ function extractLiveStatus(html){
   }
 
   // =========================
+// CURRENT LOCATION
+// =========================
+
+let currentLocation =
+  "स्थिति उपलब्ध नहीं";
+
+let nextStation =
+  "अगला स्टेशन उपलब्ध नहीं";
+
+// CURRENTLY AT
+
+const currentMatch = html.match(
+
+  /Currently\s+at\s+([A-Za-z\s]+)/i
+);
+
+if(currentMatch){
+
+  currentLocation =
+
+    currentMatch[1].trim();
+}
+
+// NEXT STOP
+
+const nextMatch = html.match(
+
+  /Next\s+Stop\s+([A-Za-z\s]+)/i
+);
+
+if(nextMatch){
+
+  nextStation =
+
+    nextMatch[1].trim();
+}
+
+  // =========================
   // UNKNOWN
   // =========================
 
   return {
 
-    liveStatus:
-      "📡 लाइव स्थिति फिलहाल उपलब्ध नहीं है",
+  liveStatus:
+    "📡 लाइव स्थिति फिलहाल उपलब्ध नहीं है",
 
-    delayMinutes:0
-  };
+  delayMinutes:0,
+
+  currentLocation,
+
+  nextStation
+};
 }
 // EXTRA FEATURES ROUTES
 
@@ -369,6 +411,12 @@ app.post("/rail-query", async (req, res) => {
 
       delayMinutes =
         parsed.delayMinutes;
+      
+const currentLocation =
+  parsed.currentLocation || "";
+
+const nextStation =
+  parsed.nextStation || "";
 
     }catch(error){
 
@@ -383,12 +431,14 @@ app.post("/rail-query", async (req, res) => {
 
   JSON.stringify({
 
-    train:matchedTrain.hindi,
-    station:matchedStation.name,
-    liveStatus,
-    delayMinutes
+  train:matchedTrain.hindi,
+  station:matchedStation.name,
+  liveStatus,
+  delayMinutes,
+  currentLocation,
+  nextStation
 
-  }, null, 2)
+}, null, 2)
 
 );
 
@@ -427,6 +477,8 @@ app.post("/rail-query", async (req, res) => {
 
       liveStatus,
       delayMinutes,
+      currentLocation,
+      nextStation,
       sourceUrl
     });
 
