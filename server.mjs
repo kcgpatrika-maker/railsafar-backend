@@ -74,47 +74,106 @@ const trains = [
 
 function extractLiveStatus(html){
 
-  const lower =
-    html.toLowerCase();
-
   console.log(
     "HTML LENGTH:",
     html.length
   );
 
-  // FIND ALL DELAYS
+  // LOWERCASE
 
-  const delayMatches = [
+  const lower =
+    html.toLowerCase();
 
-    ...html.matchAll(
-      /(\d+)\s*(min|m)\s*late/gi
-    )
+  // =========================
+  // ON TIME
+  // =========================
+
+  if(
+
+    lower.includes("right time") ||
+
+    lower.includes("on time") ||
+
+    lower.includes("ontime")
+
+  ){
+
+    return {
+
+      liveStatus:
+        "✅ ट्रेन समय पर चल रही है",
+
+      delayMinutes:0
+    };
+  }
+
+  // =========================
+  // CANCELLED
+  // =========================
+
+  if(
+    lower.includes("cancelled")
+  ){
+
+    return {
+
+      liveStatus:
+        "❌ ट्रेन रद्द दिखाई दे रही है",
+
+      delayMinutes:0
+    };
+  }
+
+  // =========================
+  // RESCHEDULED
+  // =========================
+
+  if(
+    lower.includes("rescheduled")
+  ){
+
+    return {
+
+      liveStatus:
+        "🚨 ट्रेन पुनर्निर्धारित दिखाई दे रही है",
+
+      delayMinutes:120
+    };
+  }
+
+  // =========================
+  // DELAY PATTERNS
+  // =========================
+
+  const patterns = [
+
+    /(\d+)\s*min\s*late/gi,
+
+    /late\s*by\s*(\d+)\s*min/gi,
+
+    /delayed\s*by\s*(\d+)\s*min/gi,
+
+    /(\d+)\s*minutes\s*late/gi
 
   ];
 
-  console.log(
-
-    "DELAY MATCHES:",
-
-    delayMatches.map(
-      m => m[0]
-    )
-
-  );
-
-  // BIGGEST DELAY
-
   let maxDelay = 0;
 
-  for(const match of delayMatches){
+  for(const pattern of patterns){
 
-    const mins =
+    const matches =
+      [...html.matchAll(pattern)];
 
-      parseInt(match[1]);
+    for(const match of matches){
 
-    if(mins > maxDelay){
+      const mins =
 
-      maxDelay = mins;
+        parseInt(match[1]);
+
+      if(mins > maxDelay){
+
+        maxDelay = mins;
+      }
     }
   }
 
@@ -132,59 +191,14 @@ function extractLiveStatus(html){
     };
   }
 
-  // CANCELLED
-
-  if(
-    lower.includes("cancelled")
-  ){
-
-    return {
-
-      liveStatus:
-        "❌ ट्रेन रद्द दिखाई दे रही है",
-
-      delayMinutes:0
-    };
-  }
-
-  // RESCHEDULED
-
-  if(
-    lower.includes("rescheduled")
-  ){
-
-    return {
-
-      liveStatus:
-        "🚨 ट्रेन पुनर्निर्धारित दिखाई दे रही है",
-
-      delayMinutes:120
-    };
-  }
-
-  // ON TIME
-
-  if(
-    lower.includes("right time") ||
-
-    lower.includes("on time")
-  ){
-
-    return {
-
-      liveStatus:
-        "✅ ट्रेन समय पर चल रही है",
-
-      delayMinutes:0
-    };
-  }
-
-  // FALLBACK
+  // =========================
+  // UNKNOWN
+  // =========================
 
   return {
 
     liveStatus:
-      "📡 लाइव स्थिति नहीं पढ़ी जा सकी",
+      "📡 लाइव स्थिति फिलहाल उपलब्ध नहीं है",
 
     delayMinutes:0
   };
