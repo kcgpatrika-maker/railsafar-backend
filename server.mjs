@@ -334,6 +334,11 @@ app.post("/rail-query", async (req, res) => {
 
       const html =
         await response.text();
+      console.log(
+
+  html.slice(0,15000)
+
+);
 
       const parsed =
         extractLiveStatus(html);
