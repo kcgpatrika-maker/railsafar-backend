@@ -369,15 +369,18 @@ app.post("/rail-query", async (req, res) => {
 
     // LIVE FETCH
 
-    let liveStatus =
-      "📡 लाइव जानकारी उपलब्ध नहीं है";
+let liveStatus =
+  "📡 लाइव जानकारी उपलब्ध नहीं है";
 
-    let delayMinutes = 0;
+let delayMinutes = 0;
 
-    const sourceUrl =
+// NEW
+let currentLocation = "";
+let nextStation = "";
 
-      `https://www.railyatri.in/live-train-status/${matchedTrain.number}`;
+const sourceUrl =
 
+  `https://www.railyatri.in/live-train-status/${matchedTrain.number}`;
     try{
 
       console.log(
@@ -407,15 +410,15 @@ app.post("/rail-query", async (req, res) => {
 );
 
       liveStatus =
-        parsed.liveStatus;
+  parsed.liveStatus;
 
-      delayMinutes =
-        parsed.delayMinutes;
-      
-const currentLocation =
+delayMinutes =
+  parsed.delayMinutes;
+
+currentLocation =
   parsed.currentLocation || "";
 
-const nextStation =
+nextStation =
   parsed.nextStation || "";
 
     }catch(error){
