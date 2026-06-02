@@ -92,21 +92,31 @@ if(nextDataMatch){
 
       return {
 
-        liveStatus:
-          lts.delay > 0
-            ? `⏱️ ट्रेन लगभग ${lts.delay} मिनट देरी से चल रही है`
-            : "✅ ट्रेन समय पर चल रही है",
+  liveStatus:
+    lts.delay > 0
+    ? `⏱️ ट्रेन लगभग ${lts.delay} मिनट देरी से चल रही है`
+    : "✅ ट्रेन समय पर चल रही है",
 
-        delayMinutes:
-          lts.delay || 0,
+  delayMinutes:
+    lts.delay || 0,
 
-        currentLocation:
-          lts.current_station_name || "",
+  currentLocation:
+    lts.current_station_name || "",
 
-        nextStation:
-          lts.upcoming_stations?.[0]?.station_name || ""
+  nextStation:
+    lts.upcoming_stations?.[0]?.station_name || "",
 
-      };
+  platformNumber:
+    lts.platform_number || "",
+
+  statusAsOf:
+    lts.status_as_of || "",
+
+  distanceInfo:
+    lts.upcoming_stations?.[0]
+      ?.distance_from_current_station_txt || ""
+
+};
 
     }
 
