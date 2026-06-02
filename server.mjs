@@ -290,12 +290,20 @@ app.post("/rail-query", async (req, res) => {
   try{
 
     const query =
-      req.body.query || "";
+  req.body.query || "";
 
-    console.log(
-      "QUERY:",
-      query
-    );
+const parsedQuery =
+  parseRailQuery(query);
+
+console.log(
+  "PARSED QUERY:",
+  parsedQuery
+);
+
+console.log(
+  "QUERY:",
+  query
+);
 
     // TRAIN FIND
 
