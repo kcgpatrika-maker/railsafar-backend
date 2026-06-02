@@ -69,7 +69,53 @@ const trains = [
   }
 
 ];
+const nextDataMatch = html.match(
+ /<script id="__NEXT_DATA__"[^>]*>(.*?)<\/script>/s
+);
 
+if(nextDataMatch){
+
+  try{
+
+    const json = JSON.parse(
+      nextDataMatch[1]
+    );
+
+    const lts =
+      json?.props?.pageProps?.ltsData;
+
+    if(lts){
+
+      return {
+
+        liveStatus:
+          lts.delay > 0
+          ? `⏱️ ट्रेन लगभग ${lts.delay} मिनट देरी से चल रही है`
+          : "✅ ट्रेन समय पर चल रही है",
+
+        delayMinutes:
+          lts.delay || 0,
+
+        currentLocation:
+          lts.current_station_name || "",
+
+        nextStation:
+          lts.upcoming_stations?.[0]?.station_name || ""
+
+      };
+
+    }
+
+  }catch(err){
+
+    console.log(
+      "NEXT JSON ERROR:",
+      err.message
+    );
+
+  }
+
+}
 // LIVE STATUS PARSER
 
 function extractLiveStatus(html){
