@@ -412,6 +412,27 @@ console.log(
 console.log(
   html.includes("__NEXT_DATA__")
 );
+      const nextDataMatch = html.match(
+  /<script id="__NEXT_DATA__"[^>]*>(.*?)<\/script>/s
+);
+
+if(nextDataMatch){
+
+  console.log(
+    "NEXT_DATA FOUND"
+  );
+
+  console.log(
+    nextDataMatch[1].slice(0,3000)
+  );
+
+}else{
+
+  console.log(
+    "NEXT_DATA NOT FOUND"
+  );
+
+}
 
       const parsed =
         extractLiveStatus(html);
