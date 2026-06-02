@@ -1,6 +1,6 @@
 import express from "express";
 import cors from "cors";
-
+import { parseRailQuery } from "./rail-parser.mjs";
 const app = express();
 
 app.use(cors());
