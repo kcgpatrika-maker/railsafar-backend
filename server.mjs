@@ -402,9 +402,15 @@ const sourceUrl =
       const html =
         await response.text();
       console.log(
+  html.includes("Next Stop")
+);
 
-  html.slice(0,15000)
+console.log(
+  html.includes("Currently")
+);
 
+console.log(
+  html.includes("__NEXT_DATA__")
 );
 
       const parsed =
