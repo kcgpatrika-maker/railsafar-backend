@@ -69,8 +69,12 @@ const trains = [
   }
 
 ];
-const nextDataMatch = html.match(
- /<script id="__NEXT_DATA__"[^>]*>(.*?)<\/script>/s
+
+// LIVE STATUS PARSER
+
+function extractLiveStatus(html){
+  const nextDataMatch = html.match(
+  /<script id="__NEXT_DATA__"[^>]*>(.*?)<\/script>/s
 );
 
 if(nextDataMatch){
@@ -90,8 +94,8 @@ if(nextDataMatch){
 
         liveStatus:
           lts.delay > 0
-          ? `⏱️ ट्रेन लगभग ${lts.delay} मिनट देरी से चल रही है`
-          : "✅ ट्रेन समय पर चल रही है",
+            ? `⏱️ ट्रेन लगभग ${lts.delay} मिनट देरी से चल रही है`
+            : "✅ ट्रेन समय पर चल रही है",
 
         delayMinutes:
           lts.delay || 0,
@@ -116,9 +120,6 @@ if(nextDataMatch){
   }
 
 }
-// LIVE STATUS PARSER
-
-function extractLiveStatus(html){
 
   console.log(
     "HTML LENGTH:",
