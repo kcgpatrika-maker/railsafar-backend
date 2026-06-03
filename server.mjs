@@ -442,6 +442,9 @@ let delayMinutes = 0;
 // NEW
 let currentLocation = "";
 let nextStation = "";
+let platformNumber = "";
+let statusAsOf = "";
+let distanceInfo = "";    
 
 const sourceUrl =
 
@@ -512,6 +515,14 @@ currentLocation =
 
 nextStation =
   parsed.nextStation || "";
+platformNumber =
+  parsed.platformNumber || "";
+
+statusAsOf =
+  parsed.statusAsOf || "";
+
+distanceInfo =
+  parsed.distanceInfo || "";      
 
     }catch(error){
 
@@ -569,11 +580,15 @@ nextStation =
         departure:
           matchedStation.departure
       },
-
       liveStatus,
       delayMinutes,
       currentLocation,
       nextStation,
+
+      platformNumber,
+      statusAsOf,
+      distanceInfo,
+
       sourceUrl
     });
 
