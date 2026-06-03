@@ -2,7 +2,8 @@ export function parseRailQuery(query = "") {
 
   const result = {
     trainText: "",
-    stationText: "",
+    boardingStation: "",
+    destinationStation: "",
     intent: "status"
   };
 
@@ -12,7 +13,7 @@ export function parseRailQuery(query = "") {
 
   if (
     lower.includes("कब आएगी") ||
-    lower.includes("आएगी") ||
+    lower.includes("आ रही है") ||
     lower.includes("arrival")
   ) {
     result.intent = "arrival";
@@ -20,7 +21,7 @@ export function parseRailQuery(query = "") {
 
   else if (
     lower.includes("कब जाएगी") ||
-    lower.includes("जाएगी") ||
+    lower.includes("जा रही है") ||
     lower.includes("departure")
   ) {
     result.intent = "departure";
@@ -29,20 +30,33 @@ export function parseRailQuery(query = "") {
   else if (
     lower.includes("कहाँ है") ||
     lower.includes("कहां है") ||
+    lower.includes("अभी कहाँ") ||
+    lower.includes("अभी कहां") ||
     lower.includes("where")
   ) {
     result.intent = "location";
   }
 
-  // STATION
+  // BOARDING STATION
+  // जयपुर स्टेशन पर
 
-  const stationMatch = query.match(
-    /(.+?)\s*स्टेशन/
-  );
+  const stationMatch =
+    query.match(/(.+?)\s*स्टेशन/);
 
   if (stationMatch) {
-    result.stationText =
+    result.boardingStation =
       stationMatch[1].trim();
+  }
+
+  // DESTINATION STATION
+  // अलवर जाने वाली
+
+  const destinationMatch =
+    query.match(/(.+?)\s*जाने\s*वाली/);
+
+  if (destinationMatch) {
+    result.destinationStation =
+      destinationMatch[1].trim();
   }
 
   return result;
