@@ -2,8 +2,8 @@ export function parseRailQuery(query = "") {
 
   const result = {
     trainText: "",
-    boardingStation: "",
-    destinationStation: "",
+    stationText: "",
+    destinationText: "",
     intent: "status"
   };
 
@@ -30,33 +30,43 @@ export function parseRailQuery(query = "") {
   else if (
     lower.includes("कहाँ है") ||
     lower.includes("कहां है") ||
-    lower.includes("अभी कहाँ") ||
-    lower.includes("अभी कहां") ||
+    lower.includes("किस जगह है") ||
     lower.includes("where")
   ) {
     result.intent = "location";
   }
 
-  // BOARDING STATION
-  // जयपुर स्टेशन पर
+  // DESTINATION
 
-  const stationMatch =
-    query.match(/(.+?)\s*स्टेशन/);
+  const destinationMatch = query.match(
+    /(.+?)\s+जाने\s+वाली/
+  );
+
+  if (destinationMatch) {
+    result.destinationText =
+      destinationMatch[1].trim();
+  }
+
+  // STATION
+
+  const stationMatch = query.match(
+    /([^\s]+)\s*स्टेशन/
+  );
 
   if (stationMatch) {
-    result.boardingStation =
+    result.stationText =
       stationMatch[1].trim();
   }
 
-  // DESTINATION STATION
-  // अलवर जाने वाली
+  // TRAIN NAME
 
-  const destinationMatch =
-    query.match(/(.+?)\s*जाने\s*वाली/);
+  const trainMatch = query.match(
+    /([^\n]+?)(एक्सप्रेस|superfast|सुपरफास्ट)/i
+  );
 
-  if (destinationMatch) {
-    result.destinationStation =
-      destinationMatch[1].trim();
+  if (trainMatch) {
+    result.trainText =
+      trainMatch[0].trim();
   }
 
   return result;
