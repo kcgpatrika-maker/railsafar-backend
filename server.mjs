@@ -90,16 +90,20 @@ if(nextDataMatch){
 
     if(lts){
 
-      return {
+  console.log(
+    "LTS DATA:",
+    JSON.stringify(lts, null, 2)
+  );
 
-  liveStatus:
-    lts.delay > 0
-    ? `⏱️ ट्रेन लगभग ${lts.delay} मिनट देरी से चल रही है`
-    : "✅ ट्रेन समय पर चल रही है",
+  return {
 
-  delayMinutes:
-    lts.delay || 0,
+    liveStatus:
+      lts.delay > 0
+      ? `⏱️ ट्रेन लगभग ${lts.delay} मिनट देरी से चल रही है`
+      : "✅ ट्रेन समय पर चल रही है",
 
+    delayMinutes:
+      lts.delay || 0,
   currentLocation:
     lts.current_station_name || "",
 
