@@ -343,7 +343,27 @@ app.get("/", (req, res) => {
     "RailSafar Backend Running"
   );
 });
+app.get("/test-search", async (req,res)=>{
 
+  try{
+
+    const response = await fetch(
+      "https://search.railyatri.in/mobile/trainsearch?q=mar&slip_type=1"
+    );
+
+    const data = await response.json();
+
+    res.json(data.slice(0,20));
+
+  }catch(err){
+
+    res.json({
+      error: err.message
+    });
+
+  }
+
+});
 // MAIN ROUTE
 
 app.post("/rail-query", async (req, res) => {
