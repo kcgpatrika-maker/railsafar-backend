@@ -309,11 +309,39 @@ if(nextMatch){
 
 async function findTrainByName(trainName) {
 
+console.log(
+"TRAIN NAME INPUT:",
+trainName
+);
+
 try {
 
 if (!trainName) {
   return null;
 }
+
+// हिंदी → अंग्रेज़ी मैप (प्रारम्भिक टेस्ट)
+
+const trainNameMap = {
+
+  "रानीखेत एक्सप्रेस":
+    "Ranikhet Express",
+
+  "मरुधर एक्सप्रेस":
+    "Marudhar Express",
+
+  "पूजा एक्सप्रेस":
+    "Pooja Express"
+
+};
+
+trainName =
+  trainNameMap[trainName] || trainName;
+
+console.log(
+  "NORMALIZED TRAIN:",
+  trainName
+);
 
 // पहले 3 अक्षर search के लिए
 
@@ -363,6 +391,12 @@ for (const item of data) {
       .includes(searchText)
   ) {
 
+    console.log(
+      "MATCH FOUND:",
+      trainNumber,
+      trainNameFound
+    );
+
     return {
 
       number:
@@ -374,6 +408,10 @@ for (const item of data) {
     };
   }
 }
+
+console.log(
+  "NO TRAIN MATCH FOUND"
+);
 
 return null;
 
