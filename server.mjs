@@ -86,20 +86,38 @@ if(nextDataMatch){
     );
 
     const lts =
-      json?.props?.pageProps?.ltsData;
+  json?.props?.pageProps?.ltsData;
 
-    if(
-      lts &&
-      !Array.isArray(lts)
-    ){
+if(
+  lts &&
+  !Array.isArray(lts)
+){
 
   console.log(
     "LTS DATA:",
     JSON.stringify(lts, null, 2)
   );
 
-  return {
+  console.log(
+    "LTS KEYS:",
+    Object.keys(lts)
+  );
 
+  console.log(
+    "STATIONS COUNT:",
+    lts?.all_stations?.length
+  );
+
+  console.log(
+    "FIRST STATION:",
+    JSON.stringify(
+      lts?.all_stations?.[0],
+      null,
+      2
+    )
+  );
+
+  return {
     liveStatus:
       lts.delay > 0
       ? `⏱️ ट्रेन लगभग ${lts.delay} मिनट देरी से चल रही है`
