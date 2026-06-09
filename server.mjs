@@ -541,16 +541,65 @@ console.log(
 
     // TRAIN NOT FOUND
 
-    if(!matchedTrain){
+if(!matchedTrain){
 
-      return res.json({
+  console.log(
+    "LOCAL TRAIN NOT FOUND"
+  );
 
-        success:false,
+  const searchedTrain =
+    await findTrainByName(
+      parsedQuery.trainText
+    );
 
-        message:
-          "Train not found"
-      });
-    }
+  if(!searchedTrain){
+
+    return res.json({
+
+      success:false,
+
+      message:
+        "Train not found"
+
+    });
+  }
+
+  matchedTrain = {
+
+    number:
+      searchedTrain.number,
+
+    hindi:
+      parsedQuery.trainText,
+
+    english:
+      searchedTrain.name,
+
+    aliases:[],
+
+    stations:[
+
+      {
+
+        name:
+          parsedQuery.stationText,
+
+        code:"",
+
+        arrival:"",
+
+        departure:""
+
+      }
+
+    ]
+  };
+
+  console.log(
+    "SEARCH TRAIN FOUND:",
+    matchedTrain
+  );
+}
 
     // STATION FIND
 
