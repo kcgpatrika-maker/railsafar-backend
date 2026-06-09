@@ -306,6 +306,89 @@ if(nextMatch){
   nextStation
 };
 }
+
+async function findTrainByName(trainName) {
+
+try {
+
+if (!trainName) {
+  return null;
+}
+
+// पहले 3 अक्षर search के लिए
+
+const q =
+  encodeURIComponent(
+    trainName.substring(0, 3)
+  );
+
+const url =
+  `https://search.railyatri.in/mobile/trainsearch?q=${q}&slip_type=1`;
+
+console.log(
+  "TRAIN SEARCH:",
+  url
+);
+
+const response =
+  await fetch(url);
+
+const data =
+  await response.json();
+
+console.log(
+  "SEARCH RESULTS:",
+  JSON.stringify(
+    data.slice(0, 10),
+    null,
+    2
+  )
+);
+
+const searchText =
+  trainName.toLowerCase();
+
+for (const item of data) {
+
+  const trainNumber =
+    item[0];
+
+  const trainNameFound =
+    item[1];
+
+  if (
+    trainNameFound &&
+    trainNameFound
+      .toLowerCase()
+      .includes(searchText)
+  ) {
+
+    return {
+
+      number:
+        trainNumber,
+
+      name:
+        trainNameFound
+
+    };
+  }
+}
+
+return null;
+
+} catch (error) {
+
+console.log(
+  "TRAIN SEARCH ERROR:",
+  error.message
+);
+
+return null;
+
+}
+}
+
 // EXTRA FEATURES ROUTES
 
 app.get("/open-pnr", (req, res) => {
