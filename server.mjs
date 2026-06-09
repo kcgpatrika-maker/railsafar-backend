@@ -424,6 +424,17 @@ app.get("/test-marudhar", async (req,res)=>{
 
 });
 
+app.get("/test-search", async (req, res) => {
+
+const result =
+await findTrainByName(
+"Marudhar Express"
+);
+
+res.json(result);
+
+});
+
 // ROOT
 
 app.get("/", (req, res) => {
