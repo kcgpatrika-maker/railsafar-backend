@@ -343,6 +343,61 @@ if(nextMatch){
   nextStation
 };
 }
+function findStationETA(lts, stationName){
+
+if(
+!lts ||
+!lts.upcoming_stations ||
+!stationName
+){
+return null;
+}
+
+const search =
+stationName
+.trim()
+.toLowerCase();
+
+for(
+const station
+of lts.upcoming_stations
+){
+
+const name =
+  station.station_name
+    ?.toLowerCase() || "";
+
+if(
+  name.includes(search)
+){
+
+  return {
+
+    stationName:
+      station.station_name,
+
+    eta:
+      station.eta,
+
+    etd:
+      station.etd,
+
+    arrivalDelay:
+      station.arrival_delay,
+
+    departureDelay:
+      station.departure_delay,
+
+    platformNumber:
+      station.platform_number
+
+  };
+}
+
+}
+
+return null;
+}
 
 async function findTrainByName(trainName) {
 
