@@ -329,12 +329,18 @@ app.get("/open-timetable", (req, res) => {
   );
 });
 
-app.get("/open-railwiki", (req, res) => {
+app.get("/test-marudhar", async (req,res)=>{
 
-  res.redirect(
-    "https://en.wikipedia.org/wiki/Indian_Railways"
+  const response = await fetch(
+    "https://search.railyatri.in/mobile/trainsearch?q=marudhar&slip_type=1"
   );
+
+  const data = await response.json();
+
+  res.json(data);
+
 });
+
 // ROOT
 
 app.get("/", (req, res) => {
