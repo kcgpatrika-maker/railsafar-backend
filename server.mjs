@@ -384,14 +384,29 @@ const parsedQuery =
 
 console.log(
   "PARSED QUERY:",
-  parsedQuery
+  JSON.stringify(parsedQuery, null, 2)
 );
+
+if(!parsedQuery.isValid){
+
+  return res.json({
+
+    success:false,
+
+    validation:true,
+
+    message:
+      "कृपया ट्रेन का नाम, गंतव्य स्टेशन, स्टेशन का नाम और आगमन/प्रस्थान बताइए।",
+
+    parsedQuery
+
+  });
+}
 
 console.log(
   "QUERY:",
   query
 );
-
     // TRAIN FIND
 
     let matchedTrain = null;
