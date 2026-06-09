@@ -428,9 +428,8 @@ app.get("/test-search", async (req, res) => {
 
 const result =
 await findTrainByName(
-"Marudhar Express"
+  "Ranikhet Express"
 );
-
 res.json(result);
 
 });
