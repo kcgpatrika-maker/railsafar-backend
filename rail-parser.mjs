@@ -51,12 +51,10 @@ query.match(/(.+?)\s+जाने\s+वाली/i);
 
 if (destinationMatch) {
 
-```
 result.destinationText =
   destinationMatch[1].trim();
 
 result.hasDestination = true;
-```
 
 }
 
@@ -67,12 +65,10 @@ query.match(/([^\s]+)\s*स्टेशन/i);
 
 if (stationMatch) {
 
-```
 result.stationText =
   stationMatch[1].trim();
 
 result.hasStation = true;
-```
 
 }
 
@@ -83,7 +79,6 @@ query.match(/([^\n]+?)(एक्सप्रेस|superfast|सुपरफा�
 
 if (trainMatch) {
 
-```
 let trainName =
   trainMatch[0].trim();
 
@@ -93,7 +88,6 @@ trainName =
 result.trainText = trainName;
 
 result.hasTrain = true;
-```
 
 }
 
