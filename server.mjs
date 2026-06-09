@@ -88,7 +88,10 @@ if(nextDataMatch){
     const lts =
       json?.props?.pageProps?.ltsData;
 
-    if(lts){
+    if(
+      lts &&
+      !Array.isArray(lts)
+    ){
 
   console.log(
     "LTS DATA:",
