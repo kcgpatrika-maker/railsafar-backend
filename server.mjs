@@ -109,13 +109,29 @@ if(
   );
 
   console.log(
-    "FIRST STATION:",
-    JSON.stringify(
-      lts?.all_stations?.[0],
-      null,
-      2
-    )
-  );
+  "UPCOMING COUNT:",
+  lts?.upcoming_stations?.length
+);
+
+console.log(
+  "FIRST UPCOMING:",
+  JSON.stringify(
+    lts?.upcoming_stations?.[0],
+    null,
+    2
+  )
+);
+
+console.log(
+  "LAST PREVIOUS:",
+  JSON.stringify(
+    lts?.previous_stations?.[
+      lts?.previous_stations?.length - 1
+    ],
+    null,
+    2
+  )
+);
 
   return {
     liveStatus:
