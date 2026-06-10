@@ -811,6 +811,47 @@ if(nextDataMatch){
 
 }
 
+      let stationETA = null;
+
+const nextDataMatch2 = html.match(
+  /<script id="__NEXT_DATA__"[^>]*>(.*?)<\/script>/s
+);
+
+if(nextDataMatch2){
+
+  try{
+
+    const json = JSON.parse(
+      nextDataMatch2[1]
+    );
+
+    const lts =
+      json?.props?.pageProps?.ltsData;
+
+    stationETA =
+      findStationETA(
+        lts,
+        parsedQuery.stationText
+      );
+
+    console.log(
+      "STATION ETA:",
+      JSON.stringify(
+        stationETA,
+        null,
+        2
+      )
+    );
+
+  }catch(err){
+
+    console.log(
+      "ETA ERROR:",
+      err.message
+    );
+
+  }
+}
       const parsed =
         extractLiveStatus(html);
       console.log(
@@ -839,7 +880,31 @@ statusAsOf =
   parsed.statusAsOf || "";
 
 distanceInfo =
-  parsed.distanceInfo || "";      
+  parsed.distanceInfo || "";
+
+let eta = "";
+let etd = "";
+let arrivalDelay = 0;
+let departureDelay = 0;
+let stationPlatform = "";
+
+if(stationETA){
+
+  eta =
+    stationETA.eta || "";
+
+  etd =
+    stationETA.etd || "";
+
+  arrivalDelay =
+    stationETA.arrivalDelay || 0;
+
+  departureDelay =
+    stationETA.departureDelay || 0;
+
+  stationPlatform =
+    stationETA.platformNumber || "";
+}      
 
     }catch(error){
 
@@ -859,7 +924,10 @@ distanceInfo =
   liveStatus,
   delayMinutes,
   currentLocation,
-  nextStation
+  nextStation,
+  eta,
+  etd,
+  stationPlatform
 
 }, null, 2)
 
@@ -905,6 +973,11 @@ distanceInfo =
       platformNumber,
       statusAsOf,
       distanceInfo,
+      eta,
+      etd,
+      arrivalDelay,
+      departureDelay,
+      stationPlatform,
 
       sourceUrl
     });
