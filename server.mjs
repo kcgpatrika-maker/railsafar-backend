@@ -848,12 +848,21 @@ if(nextDataMatch2){
     const lts =
       json?.props?.pageProps?.ltsData;
 
-    stationETA =
-      findStationETA(
-        lts,
-        parsedQuery.stationText
-      );
+    console.log(
+  "SEARCHING STATION:",
+  parsedQuery.stationText
+);
 
+stationETA =
+  findStationETA(
+    lts,
+    parsedQuery.stationText
+  );
+
+console.log(
+  "STATION ETA RAW:",
+  stationETA
+);
     console.log(
       "STATION ETA:",
       JSON.stringify(
