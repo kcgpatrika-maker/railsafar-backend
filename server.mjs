@@ -902,7 +902,7 @@ console.log(
     stationName.includes("ajmer")
   )
 
-)
+){
 
       stationETA = {
 
