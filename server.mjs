@@ -883,7 +883,20 @@ console.log(
     const station
     of routeStations
   ){
-
+if(
+  station.station_name
+    .toLowerCase()
+    .includes("ajmer")
+){
+  console.log(
+    "AJMER FOUND IN ROUTE:",
+    JSON.stringify(
+      station,
+      null,
+      2
+    )
+  );
+}
     const stationName =
       (
         station.station_name || ""
