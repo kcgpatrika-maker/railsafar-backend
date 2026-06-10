@@ -845,13 +845,69 @@ if(nextDataMatch2){
       nextDataMatch2[1]
     );
 
-    const lts =
-      json?.props?.pageProps?.ltsData;
+    const routeStations =
+  json?.props?.pageProps
+    ?.timeTableData?.[0]
+    ?.route || [];
 
-    console.log(
-  "SEARCHING STATION:",
-  parsedQuery.stationText
-);
+stationETA =
+  findStationETA(
+    lts,
+    parsedQuery.stationText
+  );
+
+if(
+  !stationETA &&
+  routeStations.length > 0
+){
+
+  const search =
+    parsedQuery.stationText
+      .toLowerCase();
+
+  for(
+    const station
+    of routeStations
+  ){
+
+    const stationName =
+      (
+        station.station_name || ""
+      )
+      .toLowerCase();
+
+    if(
+      stationName.includes(search) ||
+      stationName.includes("ajmer") &&
+      search.includes("अजमेर")
+    ){
+
+      stationETA = {
+
+        stationName:
+          station.station_name,
+
+        eta:
+          station.eta,
+
+        etd:
+          station.etd,
+
+        arrivalDelay:
+          station.arrival_delay || 0,
+
+        departureDelay:
+          station.departure_delay || 0,
+
+        platformNumber:
+          station.platform_number || ""
+
+      };
+
+      break;
+    }
+  }
+}
 
 stationETA =
   findStationETA(
