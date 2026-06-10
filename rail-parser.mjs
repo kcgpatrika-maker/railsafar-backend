@@ -17,33 +17,46 @@ const lower = query.toLowerCase();
 // INTENT
 
 if (
-lower.includes("कब आएगी") ||
-lower.includes("आ रही है") ||
-lower.includes("arrival")
+
+query.includes("कब आएगी") ||
+query.includes("कब आयेगी") ||
+query.includes("आ रही है") ||
+query.includes("arrival")
+
 ) {
+
 result.intent = "arrival";
 result.hasIntent = true;
+
 }
 
 else if (
-lower.includes("कब जाएगी") ||
-lower.includes("जा रही है") ||
-lower.includes("departure")
+
+query.includes("कब जाएगी") ||
+query.includes("कब जायेगी") ||
+query.includes("जा रही है") ||
+query.includes("departure")
+
 ) {
+
 result.intent = "departure";
 result.hasIntent = true;
+
 }
 
 else if (
-lower.includes("कहाँ है") ||
-lower.includes("कहां है") ||
-lower.includes("किस जगह है") ||
-lower.includes("where")
+
+query.includes("कहाँ है") ||
+query.includes("कहां है") ||
+query.includes("किस जगह है") ||
+query.includes("where")
+
 ) {
+
 result.intent = "location";
 result.hasIntent = true;
-}
 
+}
 // DESTINATION
 
 const destinationMatch =
