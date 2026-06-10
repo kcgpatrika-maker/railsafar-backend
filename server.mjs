@@ -889,6 +889,14 @@ console.log(
         station.station_name || ""
       )
       .toLowerCase();
+    if(
+  stationName.includes("ajmer")
+){
+  console.log(
+    "AJMER FOUND IN ROUTE:",
+    station.station_name
+  );
+}
 
     if(
 
