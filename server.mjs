@@ -842,10 +842,13 @@ if(nextDataMatch2){
   try{
 
     const json = JSON.parse(
-      nextDataMatch2[1]
-    );
+  nextDataMatch2[1]
+);
 
-    const routeStations =
+const lts =
+  json?.props?.pageProps?.ltsData;
+
+const routeStations =
   json?.props?.pageProps
     ?.timeTableData?.[0]
     ?.route || [];
@@ -908,12 +911,6 @@ if(
     }
   }
 }
-
-stationETA =
-  findStationETA(
-    lts,
-    parsedQuery.stationText
-  );
 
 console.log(
   "STATION ETA RAW:",
