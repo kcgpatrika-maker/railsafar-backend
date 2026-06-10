@@ -864,13 +864,21 @@ console.log(
   stationETA
 );
     console.log(
-      "STATION ETA:",
-      JSON.stringify(
-        stationETA,
-        null,
-        2
-      )
-    );
+  "TIMETABLE ROUTE COUNT:",
+  json?.props?.pageProps
+      ?.timeTableData?.[0]
+      ?.route?.length
+);
+    console.log(
+  "FIRST ROUTE STATION:",
+  JSON.stringify(
+    json?.props?.pageProps
+      ?.timeTableData?.[0]
+      ?.route?.[0],
+    null,
+    2
+  )
+);
 
   }catch(err){
 
