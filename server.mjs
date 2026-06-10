@@ -353,10 +353,28 @@ if(
 return null;
 }
 
+const hindiToEnglish = {
+
+  "अजमेर":"ajmer",
+  "जयपुर":"jaipur",
+  "दिल्ली":"delhi",
+  "जोधपुर":"jodhpur",
+  "वाराणसी":"varanasi",
+  "लखनऊ":"lucknow",
+  "आगरा":"agra",
+  "अलवर":"alwar"
+
+};
+
 const search =
-stationName
-.trim()
-.toLowerCase();
+(
+  hindiToEnglish[
+    stationName.trim()
+  ] ||
+  stationName
+)
+.toLowerCase()
+.trim();
 
 for(
 const station
@@ -364,9 +382,11 @@ of lts.upcoming_stations
 ){
 
 const name =
-  station.station_name
-    ?.toLowerCase() || "";
-
+  (station.station_name || "")
+    .toLowerCase()
+    .replace("jn","")
+    .replace("junction","")
+    .trim();
 if(
   name.includes(search)
 ){
