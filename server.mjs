@@ -867,6 +867,17 @@ if(
   const search =
     parsedQuery.stationText
       .toLowerCase();
+  console.log(
+  "SEARCHING STATION:",
+  search
+);
+
+console.log(
+  "ROUTE SAMPLE:",
+  routeStations
+    .slice(0,20)
+    .map(x => x.station_name)
+);
 
   for(
     const station
@@ -880,10 +891,18 @@ if(
       .toLowerCase();
 
     if(
-      stationName.includes(search) ||
-      stationName.includes("ajmer") &&
-      search.includes("अजमेर")
-    ){
+
+  stationName.includes(search)
+
+  ||
+
+  (
+    search.includes("अजमेर")
+    &&
+    stationName.includes("ajmer")
+  )
+
+)
 
       stationETA = {
 
