@@ -878,7 +878,12 @@ console.log(
     .slice(0,20)
     .map(x => x.station_name)
 );
-
+console.log(
+  "ALL ROUTE STATIONS:",
+  routeStations.map(
+    x => x.station_name
+  )
+);
   for(
     const station
     of routeStations
