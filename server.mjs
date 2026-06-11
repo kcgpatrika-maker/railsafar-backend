@@ -585,28 +585,12 @@ console.log(
 error.message
 );
 
-return null;
-
 }
 }
 
 console.log(
   "NO TRAIN MATCH FOUND"
 );
-
-return null;
-
-} catch (error) {
-
-console.log(
-  "TRAIN SEARCH ERROR:",
-  error.message
-);
-
-return null;
-
-}
-}
 
 // EXTRA FEATURES ROUTES
 
