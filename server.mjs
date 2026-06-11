@@ -697,18 +697,23 @@ console.log(
   "QUERY:",
   query
 );
-    // TRAIN FIND
 
-    let matchedTrain = null;
+// TRAIN FIND
 
-    for(const train of trains){
+let matchedTrain = null;
 
-      if(
-        query.includes(train.hindi)
-      ){
+console.log(
+  "TRAIN FROM PARSER:",
+  parsedQuery.trainText
+);
 
-        matchedTrain = train;
+for(const train of trains){
 
+  if(
+    query.includes(train.hindi)
+  ){
+
+    matchedTrain = train;
         break;
       }
 
