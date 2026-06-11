@@ -482,7 +482,6 @@ return null;
 // अभी मैप रहने दो
 const trainNameMap = {
 
-```
 "रानीखेत एक्सप्रेस":
   "Ranikhet Express",
 
@@ -491,7 +490,6 @@ const trainNameMap = {
 
 "पूजा एक्सप्रेस":
   "Pooja Express"
-```
 
 };
 
@@ -542,7 +540,6 @@ trainName.toLowerCase();
 
 for (const item of data) {
 
-```
 const trainNumber =
   item[0];
 
@@ -572,7 +569,6 @@ if (
 
   };
 }
-```
 
 }
 
