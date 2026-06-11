@@ -476,96 +476,122 @@ trainName
 try {
 
 if (!trainName) {
-  return null;
+return null;
 }
 
-// हिंदी → अंग्रेज़ी मैप (प्रारम्भिक टेस्ट)
-
+// अभी मैप रहने दो
 const trainNameMap = {
 
-  "रानीखेत एक्सप्रेस":
-    "Ranikhet Express",
+```
+"रानीखेत एक्सप्रेस":
+  "Ranikhet Express",
 
-  "मरुधर एक्सप्रेस":
-    "Marudhar Express",
+"मरुधर एक्सप्रेस":
+  "Marudhar Express",
 
-  "पूजा एक्सप्रेस":
-    "Pooja Express"
+"पूजा एक्सप्रेस":
+  "Pooja Express"
+```
 
 };
 
 trainName =
-  trainNameMap[trainName] || trainName;
+trainNameMap[trainName] || trainName;
 
 console.log(
-  "NORMALIZED TRAIN:",
-  trainName
+"NORMALIZED TRAIN:",
+trainName
 );
 
-// पहले 3 अक्षर search के लिए
+console.log(
+"FULL TRAIN NAME:",
+trainName
+);
 
+// अब पूरे नाम से search
 const q =
-  encodeURIComponent(
-    trainName.substring(0, 3)
-  );
+encodeURIComponent(
+trainName
+);
 
 const url =
-  `https://search.railyatri.in/mobile/trainsearch?q=${q}&slip_type=1`;
+`https://search.railyatri.in/mobile/trainsearch?q=${q}&slip_type=1`;
 
 console.log(
-  "TRAIN SEARCH:",
-  url
+"TRAIN SEARCH:",
+url
 );
 
 const response =
-  await fetch(url);
+await fetch(url);
 
 const data =
-  await response.json();
+await response.json();
 
 console.log(
-  "SEARCH RESULTS:",
-  JSON.stringify(
-    data.slice(0, 10),
-    null,
-    2
-  )
+"SEARCH RESULTS:",
+JSON.stringify(
+data.slice(0, 20),
+null,
+2
+)
 );
 
 const searchText =
-  trainName.toLowerCase();
+trainName.toLowerCase();
 
 for (const item of data) {
 
-  const trainNumber =
-    item[0];
+```
+const trainNumber =
+  item[0];
 
-  const trainNameFound =
-    item[1];
+const trainNameFound =
+  item[1];
 
-  if (
-    trainNameFound &&
+if (
+  trainNameFound &&
+  trainNameFound
+    .toLowerCase()
+    .includes(searchText)
+) {
+
+  console.log(
+    "MATCH FOUND:",
+    trainNumber,
     trainNameFound
-      .toLowerCase()
-      .includes(searchText)
-  ) {
+  );
 
-    console.log(
-      "MATCH FOUND:",
+  return {
+
+    number:
       trainNumber,
+
+    name:
       trainNameFound
-    );
 
-    return {
+  };
+}
+```
 
-      number:
-        trainNumber,
+}
 
-      name:
-        trainNameFound
+console.log(
+"NO TRAIN MATCH FOUND"
+);
 
-    };
-  }
+return null;
+
+} catch (error) {
+
+console.log(
+"TRAIN SEARCH ERROR:",
+error.message
+);
+
+return null;
+
+}
 }
 
 console.log(
