@@ -828,7 +828,15 @@ let currentLocation = "";
 let nextStation = "";
 let platformNumber = "";
 let statusAsOf = "";
-let distanceInfo = "";    
+let distanceInfo = "";
+
+let stationETA = null;
+
+let eta = "";
+let etd = "";
+let arrivalDelay = 0;
+let departureDelay = 0;
+let stationPlatform = "";    
 
 const sourceUrl =
 
@@ -878,7 +886,6 @@ if(nextDataMatch){
 
 }
 
-      let stationETA = null;
 
 const nextDataMatch2 = html.match(
   /<script id="__NEXT_DATA__"[^>]*>(.*?)<\/script>/s
@@ -911,9 +918,24 @@ if(
   routeStations.length > 0
 ){
 
-  const search =
+  const stationMap = {
+
+  "अजमेर":"ajmer",
+  "जयपुर":"jaipur",
+  "दिल्ली":"delhi",
+  "जोधपुर":"jodhpur",
+  "वाराणसी":"varanasi"
+
+};
+
+const search =
+(
+  stationMap[
     parsedQuery.stationText
-      .toLowerCase();
+  ] ||
+  parsedQuery.stationText
+)
+.toLowerCase();
   console.log(
   "SEARCHING STATION:",
   search
@@ -1063,12 +1085,6 @@ statusAsOf =
 
 distanceInfo =
   parsed.distanceInfo || "";
-
-let eta = "";
-let etd = "";
-let arrivalDelay = 0;
-let departureDelay = 0;
-let stationPlatform = "";
 
 if(stationETA){
 
