@@ -1090,13 +1090,41 @@ statusAsOf =
 distanceInfo =
   parsed.distanceInfo || "";
 
-if(stationETA){
+function formatRailTime(value){
+
+  if(
+    value === undefined ||
+    value === null ||
+    value === ""
+  ){
+    return "";
+  }
+
+  const num = parseInt(value);
+
+  if(isNaN(num)){
+    return value;
+  }
+
+  const hours =
+    Math.floor(num / 60);
+
+  const mins =
+    num % 60;
+
+  return `${String(hours).padStart(2,"0")}:${String(mins).padStart(2,"0")}`;
+}
+  if(stationETA){
 
   eta =
-    stationETA.eta || "";
+    formatRailTime(
+      stationETA.eta
+    );
 
   etd =
-    stationETA.etd || "";
+    formatRailTime(
+      stationETA.etd
+    );
 
   arrivalDelay =
     stationETA.arrivalDelay || 0;
