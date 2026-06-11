@@ -343,14 +343,14 @@ if(nextMatch){
   nextStation
 };
 }
+
 function findStationETA(lts, stationName){
 
 if(
-!lts ||
-!lts.upcoming_stations ||
-!stationName
+  !lts ||
+  !stationName
 ){
-return null;
+  return null;
 }
 
 const hindiToEnglish = {
@@ -376,47 +376,94 @@ const search =
 .toLowerCase()
 .trim();
 
+// पहले upcoming_stations में खोजो
+
+const upcoming =
+  lts.upcoming_stations || [];
+
 for(
-const station
-of lts.upcoming_stations
+  const station
+  of upcoming
 ){
 
-const name =
-  (station.station_name || "")
-    .toLowerCase()
-    .replace("jn","")
-    .replace("junction","")
-    .trim();
-if(
-  name.includes(search)
-){
+  const name =
+    (station.station_name || "")
+      .toLowerCase()
+      .trim();
 
-  return {
+  if(
+    name.includes(search)
+  ){
 
-    stationName:
-      station.station_name,
+    return {
 
-    eta:
-      station.eta,
+      stationName:
+        station.station_name,
 
-    etd:
-      station.etd,
+      eta:
+        station.eta || "",
 
-    arrivalDelay:
-      station.arrival_delay,
+      etd:
+        station.etd || "",
 
-    departureDelay:
-      station.departure_delay,
+      arrivalDelay:
+        station.arrival_delay || 0,
 
-    platformNumber:
-      station.platform_number
+      departureDelay:
+        station.departure_delay || 0,
 
-  };
+      platformNumber:
+        station.platform_number || ""
+
+    };
+  }
 }
 
+// फिर previous_stations में खोजो
+
+const previous =
+  lts.previous_stations || [];
+
+for(
+  const station
+  of previous
+){
+
+  const name =
+    (station.station_name || "")
+      .toLowerCase()
+      .trim();
+
+  if(
+    name.includes(search)
+  ){
+
+    return {
+
+      stationName:
+        station.station_name,
+
+      eta:
+        station.eta || "",
+
+      etd:
+        station.etd || "",
+
+      arrivalDelay:
+        station.arrival_delay || 0,
+
+      departureDelay:
+        station.departure_delay || 0,
+
+      platformNumber:
+        station.platform_number || ""
+
+    };
+  }
 }
 
 return null;
+
 }
 
 async function findTrainByName(trainName) {
