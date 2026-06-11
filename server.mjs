@@ -1001,25 +1001,29 @@ if(
 
       stationETA = {
 
-        stationName:
-          station.station_name,
+  stationName:
+    station.station_name,
 
-        eta:
-          station.eta,
+  eta:
+    station.eta ||
+    station.sta ||
+    "",
 
-        etd:
-          station.etd,
+  etd:
+    station.etd ||
+    station.std ||
+    "",
 
-        arrivalDelay:
-          station.arrival_delay || 0,
+  arrivalDelay:
+    station.arrival_delay || 0,
 
-        departureDelay:
-          station.departure_delay || 0,
+  departureDelay:
+    station.departure_delay || 0,
 
-        platformNumber:
-          station.platform_number || ""
+  platformNumber:
+    station.platform_number || ""
 
-      };
+};
 
       break;
     }
