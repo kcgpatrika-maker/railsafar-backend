@@ -476,100 +476,94 @@ trainName
 try {
 
 if (!trainName) {
-return null;
+  return null;
 }
 
-// अभी मैप रहने दो
 const trainNameMap = {
 
-"रानीखेत एक्सप्रेस":
-  "Ranikhet Express",
+  "रानीखेत एक्सप्रेस":
+    "Ranikhet Express",
 
-"मरुधर एक्सप्रेस":
-  "Marudhar Express",
+  "मरुधर एक्सप्रेस":
+    "Marudhar Express",
 
-"पूजा एक्सप्रेस":
-  "Pooja Express"
+  "पूजा एक्सप्रेस":
+    "Pooja Express"
 
 };
 
 trainName =
-trainNameMap[trainName] || trainName;
+  trainNameMap[trainName] || trainName;
 
 console.log(
-"NORMALIZED TRAIN:",
-trainName
-);
-
-console.log(
-"FULL TRAIN NAME:",
-trainName
+  "NORMALIZED TRAIN:",
+  trainName
 );
 
 // अब पूरे नाम से search
+
 const q =
-encodeURIComponent(
-trainName
-);
+  encodeURIComponent(
+    trainName
+  );
 
 const url =
-`https://search.railyatri.in/mobile/trainsearch?q=${q}&slip_type=1`;
+  `https://search.railyatri.in/mobile/trainsearch?q=${q}&slip_type=1`;
 
 console.log(
-"TRAIN SEARCH:",
-url
+  "TRAIN SEARCH:",
+  url
 );
 
 const response =
-await fetch(url);
+  await fetch(url);
 
 const data =
-await response.json();
+  await response.json();
 
 console.log(
-"SEARCH RESULTS:",
-JSON.stringify(
-data.slice(0, 20),
-null,
-2
-)
+  "SEARCH RESULTS:",
+  JSON.stringify(
+    data.slice(0, 20),
+    null,
+    2
+  )
 );
 
 const searchText =
-trainName.toLowerCase();
+  trainName.toLowerCase();
 
 for (const item of data) {
 
-const trainNumber =
-  item[0];
+  const trainNumber =
+    item[0];
 
-const trainNameFound =
-  item[1];
+  const trainNameFound =
+    item[1];
 
-if (
-  trainNameFound &&
-  trainNameFound
-    .toLowerCase()
-    .includes(searchText)
-) {
-
-  console.log(
-    "MATCH FOUND:",
-    trainNumber,
+  if (
+    trainNameFound &&
     trainNameFound
-  );
+      .toLowerCase()
+      .includes(searchText)
+  ) {
 
-  return {
-
-    number:
+    console.log(
+      "MATCH FOUND:",
       trainNumber,
-
-    name:
       trainNameFound
+    );
 
-  };
-}
+    return {
 
+      number:
+        trainNumber,
+
+      name:
+        trainNameFound
+
+    };
+  }
 }
 
 console.log(
