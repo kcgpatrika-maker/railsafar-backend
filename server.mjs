@@ -697,7 +697,9 @@ console.log(
 );
 
 // TRAIN FIND
-
+console.log(
+  "USING LIVE SEARCH ONLY TEST"
+);
 let matchedTrain = null;
 
 console.log(
@@ -706,7 +708,10 @@ console.log(
 );
 
 for(const train of trains){
-
+console.log(
+  "LOCAL MATCH:",
+  train.hindi
+);
   if(
     query.includes(train.hindi)
   ){
