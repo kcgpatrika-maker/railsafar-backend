@@ -1118,10 +1118,18 @@ function formatRailTime(value){
     return "";
   }
 
+  // पहले से HH:MM है
+  if(
+    typeof value === "string" &&
+    value.includes(":")
+  ){
+    return value;
+  }
+
   const num = parseInt(value);
 
   if(isNaN(num)){
-    return value;
+    return "";
   }
 
   const hours =
