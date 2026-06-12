@@ -488,10 +488,12 @@ const trainNameMap = {
     "Marudhar Express",
 
   "पूजा एक्सप्रेस":
-    "Pooja Express"
+    "Pooja Express",
+
+  "गोमती एक्सप्रेस":
+    "Gomti Express"
 
 };
-
 trainName =
   trainNameMap[trainName] || trainName;
 
