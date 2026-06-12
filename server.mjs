@@ -898,10 +898,25 @@ if(nextDataMatch2){
 
   try{
 
-    const json = JSON.parse(
+  const json = JSON.parse(
   nextDataMatch2[1]
 );
+console.log(
+  "PAGE PROPS KEYS:",
+  Object.keys(
+    json?.props?.pageProps || {}
+  )
+);
 
+console.log(
+  "HAS LTS:",
+  !!json?.props?.pageProps?.ltsData
+);
+
+console.log(
+  "HAS TIMETABLE:",
+  !!json?.props?.pageProps?.timeTableData
+);
 const lts =
   json?.props?.pageProps?.ltsData;
 
