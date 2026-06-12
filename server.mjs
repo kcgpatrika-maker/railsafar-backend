@@ -7,69 +7,6 @@ app.use(cors());
 
 app.use(express.json());
 
-// TRAIN DATABASE
-
-const trains = [
-
-  {
-
-    number:"14864",
-
-    hindi:"मरुधर एक्सप्रेस",
-
-    english:"Marudhar Express",
-
-    aliases:[
-      "मरुधर",
-      "मरुधर ट्रेन"
-    ],
-
-    stations:[
-
-      {
-        name:"जयपुर",
-        code:"JP",
-        arrival:"01:35 AM",
-        departure:"01:45 AM"
-      },
-
-      {
-        name:"अजमेर",
-        code:"AII",
-        arrival:"11:20 PM",
-        departure:"11:30 PM"
-      }
-
-    ]
-  },
-
-  {
-
-    number:"12413",
-
-    hindi:"पूजा एक्सप्रेस",
-
-    english:"Pooja Express",
-
-    aliases:[
-      "पूजा",
-      "पूजा एक्सप्रेस"
-    ],
-
-    stations:[
-
-      {
-        name:"जयपुर",
-        code:"JP",
-        arrival:"04:00 PM",
-        departure:"04:10 PM"
-      }
-
-    ]
-  }
-
-];
-
 // LIVE STATUS PARSER
 
 function extractLiveStatus(html){
@@ -697,115 +634,67 @@ console.log(
 );
 
 // TRAIN FIND
-console.log(
-  "USING LIVE SEARCH ONLY TEST"
-);
-let matchedTrain = null;
 
 console.log(
   "TRAIN FROM PARSER:",
   parsedQuery.trainText
 );
 
-for(const train of trains){
-console.log(
-  "LOCAL MATCH:",
-  train.hindi
-);
-  if(
-    query.includes(train.hindi)
-  ){
-
-    matchedTrain = train;
-        break;
-      }
-
-      if(
-        query.includes(train.english)
-      ){
-
-        matchedTrain = train;
-
-        break;
-      }
-
-      for(const alias of train.aliases){
-
-        if(
-          query.includes(alias)
-        ){
-
-          matchedTrain = train;
-
-          break;
-        }
-      }
-
-      if(matchedTrain) break;
-    }
-
-    // TRAIN NOT FOUND
-
-if(!matchedTrain){
-
-  console.log(
-    "LOCAL TRAIN NOT FOUND"
+const searchedTrain =
+  await findTrainByName(
+    parsedQuery.trainText
   );
 
-  const searchedTrain =
-    await findTrainByName(
-      parsedQuery.trainText
-    );
+if(!searchedTrain){
 
-  if(!searchedTrain){
+  return res.json({
 
-    return res.json({
+    success:false,
 
-      success:false,
+    message:
+      "Train not found"
 
-      message:
-        "Train not found"
+  });
 
-    });
-  }
-
-  matchedTrain = {
-
-    number:
-      searchedTrain.number,
-
-    hindi:
-      parsedQuery.trainText,
-
-    english:
-      searchedTrain.name,
-
-    aliases:[],
-
-    stations:[
-
-      {
-
-        name:
-          parsedQuery.stationText,
-
-        code:"",
-
-        arrival:"",
-
-        departure:""
-
-      }
-
-    ]
-  };
-
-  console.log(
-    "SEARCH TRAIN FOUND:",
-    matchedTrain
-  );
 }
 
+const matchedTrain = {
+
+  number:
+    searchedTrain.number,
+
+  hindi:
+    parsedQuery.trainText,
+
+  english:
+    searchedTrain.name,
+
+  aliases:[],
+
+  stations:[
+
+    {
+
+      name:
+        parsedQuery.stationText,
+
+      code:"",
+
+      arrival:"",
+
+      departure:""
+
+    }
+
+  ]
+
+};
+
+console.log(
+  "LIVE SEARCH TRAIN:",
+  matchedTrain
+);
+  
     // STATION FIND
 
     let matchedStation =
