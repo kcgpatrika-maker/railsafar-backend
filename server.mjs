@@ -738,7 +738,18 @@ let stationPlatform = "";
 const sourceUrl =
 
   `https://www.railyatri.in/live-train-status/${matchedTrain.number}`;
-    try{
+
+console.log(
+  "TRAIN NUMBER:",
+  matchedTrain.number
+);
+
+console.log(
+  "SOURCE URL:",
+  sourceUrl
+);
+
+try{
 
       console.log(
         "FETCH:",
@@ -747,10 +758,21 @@ const sourceUrl =
 
       const response =
         await fetch(sourceUrl);
-
+  
       const html =
-        await response.text();
-      console.log(
+  await response.text();
+
+console.log(
+  "HTML LENGTH:",
+  html.length
+);
+
+console.log(
+  "__NEXT_DATA__:",
+  html.includes("__NEXT_DATA__")
+);
+
+console.log(
   html.includes("Next Stop")
 );
 
@@ -761,7 +783,8 @@ console.log(
 console.log(
   html.includes("__NEXT_DATA__")
 );
-      const nextDataMatch = html.match(
+      
+  const nextDataMatch = html.match(
   /<script id="__NEXT_DATA__"[^>]*>(.*?)<\/script>/s
 );
 
