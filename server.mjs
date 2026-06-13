@@ -465,6 +465,18 @@ console.log(
   url
 );
 
+const shortSearch =
+  trainName
+    .replace("एक्सप्रेस","")
+    .replace("सुपरफास्ट","")
+    .replace("इंटरसिटी","")
+    .trim();
+
+console.log(
+  "SHORT SEARCH:",
+  shortSearch
+);  
+
 const response =
   await fetch(url);
 
