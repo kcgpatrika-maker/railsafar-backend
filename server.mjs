@@ -25,6 +25,17 @@ if(nextDataMatch){
     const lts =
   json?.props?.pageProps?.ltsData;
 
+    console.log(
+  "PAGE PROPS KEYS:",
+  Object.keys(
+    json?.props?.pageProps || {}
+  )
+);
+  console.log(
+  "LTS EXISTS:",
+  !!lts
+);
+
 if(
   lts &&
   !Array.isArray(lts)
