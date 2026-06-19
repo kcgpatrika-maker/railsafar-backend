@@ -450,21 +450,6 @@ console.log(
   trainName
 );
 
-// अब पूरे नाम से search
-
-const q =
-  encodeURIComponent(
-    trainName
-  );
-
-const url =
-  `https://search.railyatri.in/mobile/trainsearch?q=${q}&slip_type=1`;
-
-console.log(
-  "TRAIN SEARCH:",
-  url
-);
-
 const shortSearch =
   trainName
     .replace("एक्सप्रेस","")
@@ -475,7 +460,20 @@ const shortSearch =
 console.log(
   "SHORT SEARCH:",
   shortSearch
-);  
+);
+
+const q =
+  encodeURIComponent(
+    shortSearch
+  );
+
+const url =
+  `https://search.railyatri.in/mobile/trainsearch?q=${q}&slip_type=1`;
+
+console.log(
+  "TRAIN SEARCH:",
+  url
+);
 
 const response =
   await fetch(url);
