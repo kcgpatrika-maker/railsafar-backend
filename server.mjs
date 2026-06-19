@@ -449,6 +449,10 @@ console.log(
   "NORMALIZED TRAIN:",
   trainName
 );
+  console.log(
+  "FIRST WORD:",
+  trainName.split(" ")[0]
+);
 
 const shortSearch =
   trainName
@@ -461,12 +465,16 @@ console.log(
   "SHORT SEARCH:",
   shortSearch
 );
+  console.log(
+  "SECOND SEARCH TRY:",
+  trainName.split(" ")[0]
+);
 
 const q =
   encodeURIComponent(
-    shortSearch
+    trainName.split(" ")[0]
   );
-
+  
 const url =
   `https://search.railyatri.in/mobile/trainsearch?q=${q}&slip_type=1`;
 
