@@ -439,7 +439,13 @@ const trainNameMap = {
     "Pooja Express",
 
   "गोमती एक्सप्रेस":
-    "Gomti Express"
+    "Gomti Express",
+    
+  "अमृतसर एक्सप्रेस":
+  "Amritsar Express",
+
+"दौलतपुर एक्सप्रेस":
+  "Daulatpur Express"
 
 };
 trainName =
