@@ -424,79 +424,63 @@ trainName
 try {
 
 if (!trainName) {
-return null;
+  return null;
 }
 
-trainName = trainName.trim();
+const trainNameMap = {
 
-// अगर यूजर सिर्फ नाम बोले
-// तो एक्सप्रेस जोड़ दो
+  "रानीखेत एक्सप्रेस":
+    "Ranikhet Express",
 
-if (
-!trainName.includes("एक्सप्रेस") &&
-!trainName.includes("Express")
-) {
+  "मरुधर एक्सप्रेस":
+    "Marudhar Express",
 
-```
-trainName =
-  trainName + " एक्सप्रेस";
-```
+  "पूजा एक्सप्रेस":
+    "Pooja Express",
 
-}
-
-// कुछ सामान्य अंग्रेजी रूप
-
-const englishMap = {
-
-```
-"रानीखेत एक्सप्रेस":
-  "Ranikhet Express",
-
-"मरुधर एक्सप्रेस":
-  "Marudhar Express",
-
-"पूजा एक्सप्रेस":
-  "Pooja Express",
-
-"गोमती एक्सप्रेस":
-  "Gomti Express",
-
-"अमृतसर एक्सप्रेस":
+  "गोमती एक्सप्रेस":
+    "Gomti Express",
+    
+  "अमृतसर एक्सप्रेस":
   "Amritsar Express",
 
 "दौलतपुर एक्सप्रेस":
-  "Daulatpur Express",
-
-"प्रयागराज एक्सप्रेस":
-  "Prayagraj Express"
-```
+  "Daulatpur Express"
 
 };
-
-const searchTerms = [
-
-```
-trainName,
-
-trainName
-  .replace(" एक्सप्रेस",""),
-
-englishMap[trainName]
-```
-
-].filter(Boolean);
+trainName =
+  trainNameMap[trainName] || trainName;
 
 console.log(
-"SEARCH TERMS:",
-searchTerms
+  "NORMALIZED TRAIN:",
+  trainName
+);
+  console.log(
+  "FIRST WORD:",
+  trainName.split(" ")[0]
 );
 
-for (const term of searchTerms) {
+const shortSearch =
+  trainName
+    .replace("एक्सप्रेस","")
+    .replace("सुपरफास्ट","")
+    .replace("इंटरसिटी","")
+    .trim();
 
-```
+console.log(
+  "SHORT SEARCH:",
+  shortSearch
+);
+  console.log(
+  "SECOND SEARCH TRY:",
+  trainName.split(" ")[0]
+);
+
 const q =
-  encodeURIComponent(term);
-
+  encodeURIComponent(
+    trainName.split(" ")[0]
+  );
+  
 const url =
   `https://search.railyatri.in/mobile/trainsearch?q=${q}&slip_type=1`;
 
@@ -514,38 +498,63 @@ const data =
 console.log(
   "SEARCH RESULTS:",
   JSON.stringify(
-    data.slice(0,20),
+    data.slice(0, 20),
     null,
     2
   )
 );
-
-if (
-  Array.isArray(data) &&
-  data.length
-) {
-
-  const first =
-    data[0];
+if(data.length){
 
   console.log(
-    "MATCH FOUND:",
-    first[0],
-    first[1]
+    "FIRST RESULT:",
+    JSON.stringify(
+      data[0],
+      null,
+      2
+    )
   );
 
-  return {
-
-    number:
-      first[0],
-
-    name:
-      first[1]
-
-  };
 }
-```
+const searchText =
+  trainName
+    .split(" ")[0]
+    .toLowerCase();
 
+for (const item of data) {
+
+  const trainNumber =
+    item[0];
+
+  const trainNameFound =
+    item[1];
+
+  if (!trainNameFound) {
+    continue;
+  }
+
+  const resultName =
+    trainNameFound.toLowerCase();
+
+  if (
+    resultName.includes(searchText)
+  ) {
+
+    console.log(
+      "MATCH FOUND:",
+      trainNumber,
+      trainNameFound
+    );
+
+    return {
+
+      number:
+        trainNumber,
+
+      name:
+        trainNameFound
+
+    };
+  }
 }
 
 console.log(
@@ -554,13 +563,12 @@ console.log(
 
 return null;
 
-} catch(error) {
+} catch (error) {
 
 console.log(
 "TRAIN SEARCH ERROR:",
 error.message
 );
-
 return null;
 }
 }
