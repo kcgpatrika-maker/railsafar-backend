@@ -618,7 +618,35 @@ await findTrainByName(
 res.json(result);
 
 });
+app.get("/test-train/:name", async (req,res)=>{
 
+  try{
+
+    const q =
+      encodeURIComponent(
+        req.params.name
+      );
+
+    const url =
+      `https://search.railyatri.in/mobile/trainsearch?q=${q}&slip_type=1`;
+
+    const response =
+      await fetch(url);
+
+    const data =
+      await response.json();
+
+    res.json(data);
+
+  }catch(err){
+
+    res.json({
+      error: err.message
+    });
+
+  }
+
+});
 // ROOT
 
 app.get("/", (req, res) => {
