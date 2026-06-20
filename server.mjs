@@ -414,164 +414,93 @@ return null;
 
 }
 
+// =============================
+// FIND TRAIN BY NAME (UPDATED)
+// =============================
 async function findTrainByName(trainName) {
+  console.log("TRAIN NAME INPUT:", trainName);
 
-console.log(
-"TRAIN NAME INPUT:",
-trainName
-);
+  try {
+    if (!trainName) {
+      return null;
+    }
 
-try {
-
-if (!trainName) {
-  return null;
-}
-
-const trainNameMap = {
-
-  "रानीखेत एक्सप्रेस":
-    "Ranikhet Express",
-
-  "मरुधर एक्सप्रेस":
-    "Marudhar Express",
-
-  "पूजा एक्सप्रेस":
-    "Pooja Express",
-
-  "गोमती एक्सप्रेस":
-    "Gomti Express",
-    
-  "अमृतसर एक्सप्रेस":
-  "Amritsar Express",
-
-"दौलतपुर एक्सप्रेस":
-  "Daulatpur Express"
-
-};
-trainName =
-  trainNameMap[trainName] || trainName;
-
-console.log(
-  "NORMALIZED TRAIN:",
-  trainName
-);
-  console.log(
-  "FIRST WORD:",
-  trainName.split(" ")[0]
-);
-
-const shortSearch =
-  trainName
-    .replace("एक्सप्रेस","")
-    .replace("सुपरफास्ट","")
-    .replace("इंटरसिटी","")
-    .trim();
-
-console.log(
-  "SHORT SEARCH:",
-  shortSearch
-);
-  console.log(
-  "SECOND SEARCH TRY:",
-  trainName.split(" ")[0]
-);
-
-const q =
-  encodeURIComponent(
-    trainName.split(" ")[0]
-  );
-  
-const url =
-  `https://search.railyatri.in/mobile/trainsearch?q=${q}&slip_type=1`;
-
-console.log(
-  "TRAIN SEARCH:",
-  url
-);
-
-const response =
-  await fetch(url);
-
-const data =
-  await response.json();
-
-console.log(
-  "SEARCH RESULTS:",
-  JSON.stringify(
-    data.slice(0, 20),
-    null,
-    2
-  )
-);
-if(data.length){
-
-  console.log(
-    "FIRST RESULT:",
-    JSON.stringify(
-      data[0],
-      null,
-      2
-    )
-  );
-
-}
-const searchText =
-  trainName
-    .split(" ")[0]
-    .toLowerCase();
-
-for (const item of data) {
-
-  const trainNumber =
-    item[0];
-
-  const trainNameFound =
-    item[1];
-
-  if (!trainNameFound) {
-    continue;
-  }
-
-  const resultName =
-    trainNameFound.toLowerCase();
-
-  if (
-    resultName.includes(searchText)
-  ) {
-
-    console.log(
-      "MATCH FOUND:",
-      trainNumber,
-      trainNameFound
-    );
-
-    return {
-
-      number:
-        trainNumber,
-
-      name:
-        trainNameFound
-
+    // हिंदी → English mapping
+    const trainNameMap = {
+      "रानीखेत एक्सप्रेस": "Ranikhet Express",
+      "मरुधर एक्सप्रेस": "Marudhar Express",
+      "पूजा एक्सप्रेस": "Pooja Express",
+      "गोमती एक्सप्रेस": "Gomti Express",
+      "अमृतसर एक्सप्रेस": "Amritsar Express",
+      "दौलतपुर एक्सप्रेस": "Daulatpur Express"
     };
+
+    // Normalize: हिंदी से English
+    trainName = trainNameMap[trainName] || trainName;
+
+    // हमेशा Express जोड़ें
+    if (!trainName.toLowerCase().includes("express")) {
+      trainName = trainName.trim() + " Express";
+    }
+
+    console.log("NORMALIZED TRAIN:", trainName);
+
+    // Short search text
+    const shortSearch = trainName
+      .replace("एक्सप्रेस", "")
+      .replace("Express", "")
+      .replace("सुपरफास्ट", "")
+      .replace("Superfast", "")
+      .replace("इंटरसिटी", "")
+      .replace("Intercity", "")
+      .trim();
+
+    console.log("SHORT SEARCH:", shortSearch);
+
+    // API call
+    const q = encodeURIComponent(trainName.split(" ")[0]);
+    const url = `https://search.railyatri.in/mobile/trainsearch?q=${q}&slip_type=1`;
+
+    console.log("TRAIN SEARCH URL:", url);
+
+    const response = await fetch(url);
+    const data = await response.json();
+
+    console.log("SEARCH RESULTS:", JSON.stringify(data.slice(0, 10), null, 2));
+
+    if (data.length) {
+      console.log("FIRST RESULT:", JSON.stringify(data[0], null, 2));
+    }
+
+    const searchText = trainName.split(" ")[0].toLowerCase();
+
+    for (const item of data) {
+      const trainNumber = item[0];
+      const trainNameFound = item[1];
+
+      if (!trainNameFound) continue;
+
+      const resultName = trainNameFound.toLowerCase();
+
+      if (resultName.includes(searchText)) {
+        console.log("MATCH FOUND:", trainNumber, trainNameFound);
+
+        return {
+          number: trainNumber,
+          name: trainNameFound
+        };
+      }
+    }
+
+    console.log("NO TRAIN MATCH FOUND");
+    return null;
+
+  } catch (error) {
+    console.log("TRAIN SEARCH ERROR:", error.message);
+    return null;
   }
 }
 
-console.log(
-"NO TRAIN MATCH FOUND"
-);
-
-return null;
-
-} catch (error) {
-
-console.log(
-"TRAIN SEARCH ERROR:",
-error.message
-);
-return null;
-}
-}
 
 
 // EXTRA FEATURES ROUTES
