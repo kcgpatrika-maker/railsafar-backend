@@ -425,18 +425,47 @@ async function findTrainByName(trainName) {
       return null;
     }
 
-    // हिंदी → English mapping
+    // हिंदी → English mapping (common trains)
     const trainNameMap = {
       "रानीखेत एक्सप्रेस": "Ranikhet Express",
       "मरुधर एक्सप्रेस": "Marudhar Express",
       "पूजा एक्सप्रेस": "Pooja Express",
       "गोमती एक्सप्रेस": "Gomti Express",
       "अमृतसर एक्सप्रेस": "Amritsar Express",
-      "दौलतपुर एक्सप्रेस": "Daulatpur Express"
+      "दौलतपुर एक्सप्रेस": "Daulatpur Express",
+      "प्रयागराज एक्सप्रेस": "Prayagraj Express",
+      "शताब्दी एक्सप्रेस": "Shatabdi Express",
+      "राजधानी एक्सप्रेस": "Rajdhani Express",
+      "जन शताब्दी एक्सप्रेस": "Jan Shatabdi Express"
     };
+
+    // Auto-transliteration fallback
+    function transliterateHindiToEnglish(text){
+      const map = {
+        "प्रयागराज":"Prayagraj",
+        "मरुधर":"Marudhar",
+        "पूजा":"Pooja",
+        "गोमती":"Gomti",
+        "अमृतसर":"Amritsar",
+        "दौलतपुर":"Daulatpur",
+        "रानीखेत":"Ranikhet",
+        "शताब्दी":"Shatabdi",
+        "राजधानी":"Rajdhani",
+        "जन शताब्दी":"Jan Shatabdi"
+      };
+      for(const key in map){
+        if(text.includes(key)){
+          return text.replace(key, map[key]);
+        }
+      }
+      return text;
+    }
 
     // Normalize: हिंदी से English
     trainName = trainNameMap[trainName] || trainName;
+
+    // Auto-transliteration fallback
+    trainName = transliterateHindiToEnglish(trainName);
 
     // हमेशा Express जोड़ें
     if (!trainName.toLowerCase().includes("express")) {
@@ -500,8 +529,6 @@ async function findTrainByName(trainName) {
     return null;
   }
 }
-
-
 
 // EXTRA FEATURES ROUTES
 
