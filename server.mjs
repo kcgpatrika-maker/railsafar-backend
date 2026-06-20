@@ -516,7 +516,9 @@ if(data.length){
 
 }
 const searchText =
-  trainName.toLowerCase();
+  trainName
+    .split(" ")[0]
+    .toLowerCase();
 
 for (const item of data) {
 
@@ -526,11 +528,15 @@ for (const item of data) {
   const trainNameFound =
     item[1];
 
+  if (!trainNameFound) {
+    continue;
+  }
+
+  const resultName =
+    trainNameFound.toLowerCase();
+
   if (
-    trainNameFound &&
-    trainNameFound
-      .toLowerCase()
-      .includes(searchText)
+    resultName.includes(searchText)
   ) {
 
     console.log(
