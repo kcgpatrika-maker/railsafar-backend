@@ -608,6 +608,25 @@ app.get("/test-marudhar", async (req,res)=>{
   res.json(data);
 
 });
+app.get("/test-route", async (req,res)=>{
+
+  try{
+
+    const response = await fetch(
+      "https://www.railyatri.in/routes/jp-jaipur-to-asr-amritsar-jn"
+    );
+
+    const html = await response.text();
+
+    res.send(html.slice(0,15000));
+
+  }catch(err){
+
+    res.send(err.message);
+
+  }
+
+});
 
 app.get("/test-search", async (req, res) => {
 
