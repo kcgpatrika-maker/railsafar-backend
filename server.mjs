@@ -503,7 +503,18 @@ console.log(
     2
   )
 );
+if(data.length){
 
+  console.log(
+    "FIRST RESULT:",
+    JSON.stringify(
+      data[0],
+      null,
+      2
+    )
+  );
+
+}
 const searchText =
   trainName.toLowerCase();
 
