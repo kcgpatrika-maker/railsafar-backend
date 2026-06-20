@@ -529,6 +529,68 @@ async function findTrainByName(trainName) {
     return null;
   }
 }
+// =============================
+// CONFIRM TRAIN QUERY (NEW)
+// =============================
+async function confirmTrainQuery(queryText) {
+  console.log("QUERY RECEIVED:", queryText);
+
+  try {
+    if (!queryText) {
+      return;
+    }
+
+    // Step 1: Parse query (English line से ट्रेन/स्टेशन निकालना)
+    const parsed = await parseQuery(queryText);
+    console.log("PARSED QUERY:", parsed);
+
+    if (!parsed.isValid) {
+      sendToFrontend("❌ Query समझ में नहीं आई");
+      return;
+    }
+
+    // Step 2: ट्रेन/स्टेशन नाम
+    const trainName = parsed.trainText;
+    const stationName = parsed.stationText;
+    const destinationName = parsed.destinationText;
+
+    console.log("TRAIN:", trainName);
+    console.log("STATION:", stationName);
+    console.log("DESTINATION:", destinationName);
+
+    // Step 3: Train search
+    const trainResult = await findTrainByName(trainName);
+
+    if (!trainResult) {
+      sendToFrontend("❌ ट्रेन नहीं मिली: " + trainName);
+      return;
+    }
+
+    console.log("MATCH FOUND:", trainResult);
+
+    // Step 4: API call for live status
+    const statusUrl = `https://api.railyatri.in/v1/train/${trainResult.number}/status?station=${encodeURIComponent(stationName)}&dest=${encodeURIComponent(destinationName)}`;
+    console.log("STATUS URL:", statusUrl);
+
+    const response = await fetch(statusUrl);
+    const data = await response.json();
+
+    console.log("LIVE STATUS:", data);
+
+    // Step 5: Result frontend को भेजना (हिंदी में बोलने के लिए)
+    if (data && data.arrival_time) {
+      const message = `📡 ${trainResult.name} ${stationName} स्टेशन पर ${data.arrival_time} बजे आएगी।`;
+      sendToFrontend(message);
+      speakText(message);
+    } else {
+      sendToFrontend("❌ ट्रेन का समय नहीं मिला");
+    }
+
+  } catch (error) {
+    console.log("CONFIRM QUERY ERROR:", error.message);
+    sendToFrontend("❌ Query process में error");
+  }
+}
 
 // EXTRA FEATURES ROUTES
 
