@@ -421,9 +421,7 @@ async function findTrainByName(trainName) {
   console.log("TRAIN NAME INPUT:", trainName);
 
   try {
-    if (!trainName) {
-      return null;
-    }
+    if (!trainName) return null;
 
     // हिंदी → English mapping (common trains)
     const trainNameMap = {
@@ -461,63 +459,32 @@ async function findTrainByName(trainName) {
       return text;
     }
 
-    // Normalize: हिंदी से English
     trainName = trainNameMap[trainName] || trainName;
-
-    // Auto-transliteration fallback
     trainName = transliterateHindiToEnglish(trainName);
 
-    // हमेशा Express जोड़ें
     if (!trainName.toLowerCase().includes("express")) {
       trainName = trainName.trim() + " Express";
     }
 
     console.log("NORMALIZED TRAIN:", trainName);
 
-    // Short search text
-    const shortSearch = trainName
-      .replace("एक्सप्रेस", "")
-      .replace("Express", "")
-      .replace("सुपरफास्ट", "")
-      .replace("Superfast", "")
-      .replace("इंटरसिटी", "")
-      .replace("Intercity", "")
-      .trim();
-
-    console.log("SHORT SEARCH:", shortSearch);
-
-    // API call
     const q = encodeURIComponent(trainName.split(" ")[0]);
     const url = `https://search.railyatri.in/mobile/trainsearch?q=${q}&slip_type=1`;
-
-    console.log("TRAIN SEARCH URL:", url);
 
     const response = await fetch(url);
     const data = await response.json();
 
     console.log("SEARCH RESULTS:", JSON.stringify(data.slice(0, 10), null, 2));
 
-    if (data.length) {
-      console.log("FIRST RESULT:", JSON.stringify(data[0], null, 2));
-    }
-
     const searchText = trainName.split(" ")[0].toLowerCase();
-
     for (const item of data) {
       const trainNumber = item[0];
       const trainNameFound = item[1];
-
       if (!trainNameFound) continue;
 
-      const resultName = trainNameFound.toLowerCase();
-
-      if (resultName.includes(searchText)) {
+      if (trainNameFound.toLowerCase().includes(searchText)) {
         console.log("MATCH FOUND:", trainNumber, trainNameFound);
-
-        return {
-          number: trainNumber,
-          name: trainNameFound
-        };
+        return { number: trainNumber, name: trainNameFound };
       }
     }
 
@@ -529,27 +496,24 @@ async function findTrainByName(trainName) {
     return null;
   }
 }
+
 // =============================
-// CONFIRM TRAIN QUERY (NEW)
+// CONFIRM TRAIN QUERY (FIXED)
 // =============================
-async function confirmTrainQuery(queryText) {
+async function confirmTrainQuery(queryText, res) {
   console.log("QUERY RECEIVED:", queryText);
 
   try {
-    if (!queryText) {
-      return;
-    }
+    if (!queryText) return res.json({ success:false, message:"Empty query" });
 
     // Step 1: Parse query (English line से ट्रेन/स्टेशन निकालना)
-    const parsed = await parseQuery(queryText);
+    const parsed = parseRailQuery(queryText);
     console.log("PARSED QUERY:", parsed);
 
     if (!parsed.isValid) {
-      sendToFrontend("❌ Query समझ में नहीं आई");
-      return;
+      return res.json({ success:false, message:"❌ Query समझ में नहीं आई", parsed });
     }
 
-    // Step 2: ट्रेन/स्टेशन नाम
     const trainName = parsed.trainText;
     const stationName = parsed.stationText;
     const destinationName = parsed.destinationText;
@@ -560,10 +524,8 @@ async function confirmTrainQuery(queryText) {
 
     // Step 3: Train search
     const trainResult = await findTrainByName(trainName);
-
     if (!trainResult) {
-      sendToFrontend("❌ ट्रेन नहीं मिली: " + trainName);
-      return;
+      return res.json({ success:false, message:"❌ ट्रेन नहीं मिली: " + trainName });
     }
 
     console.log("MATCH FOUND:", trainResult);
@@ -577,18 +539,17 @@ async function confirmTrainQuery(queryText) {
 
     console.log("LIVE STATUS:", data);
 
-    // Step 5: Result frontend को भेजना (हिंदी में बोलने के लिए)
+    // Step 5: Result
     if (data && data.arrival_time) {
       const message = `📡 ${trainResult.name} ${stationName} स्टेशन पर ${data.arrival_time} बजे आएगी।`;
-      sendToFrontend(message);
-      speakText(message);
+      return res.json({ success:true, message });
     } else {
-      sendToFrontend("❌ ट्रेन का समय नहीं मिला");
+      return res.json({ success:false, message:"❌ ट्रेन का समय नहीं मिला" });
     }
 
   } catch (error) {
     console.log("CONFIRM QUERY ERROR:", error.message);
-    sendToFrontend("❌ Query process में error");
+    return res.json({ success:false, message:"❌ Query process में error" });
   }
 }
 
@@ -713,554 +674,178 @@ app.get("/test-search", async (req,res)=>{
   }
 
 });
-// MAIN ROUTE
-
+// =============================
+// MAIN ROUTE (continued)
+// =============================
 app.post("/rail-query", async (req, res) => {
+  try {
+    const query = req.body.query || "";
+    const parsedQuery = parseRailQuery(query);
 
-  try{
+    console.log("PARSED QUERY:", JSON.stringify(parsedQuery, null, 2));
 
-    const query =
-  req.body.query || "";
-
-const parsedQuery =
-  parseRailQuery(query);
-
-console.log(
-  "PARSED QUERY:",
-  JSON.stringify(parsedQuery, null, 2)
-);
-
-if(!parsedQuery.isValid){
-
-  return res.json({
-
-    success:false,
-
-    validation:true,
-
-    message:
-      "कृपया ट्रेन का नाम, गंतव्य स्टेशन, स्टेशन का नाम और आगमन/प्रस्थान बताइए।",
-
-    parsedQuery
-
-  });
-}
-
-console.log(
-  "QUERY:",
-  query
-);
-
-// TRAIN FIND
-
-console.log(
-  "TRAIN FROM PARSER:",
-  parsedQuery.trainText
-);
-
-const searchedTrain =
-  await findTrainByName(
-    parsedQuery.trainText
-  );
-
-if(!searchedTrain){
-
-  return res.json({
-
-    success:false,
-
-    message:
-      "Train not found"
-
-  });
-
-}
-
-const matchedTrain = {
-
-  number:
-    searchedTrain.number,
-
-  hindi:
-    parsedQuery.trainText,
-
-  english:
-    searchedTrain.name,
-
-  aliases:[],
-
-  stations:[
-
-    {
-
-      name:
-        parsedQuery.stationText,
-
-      code:"",
-
-      arrival:"",
-
-      departure:""
-
+    if (!parsedQuery.isValid) {
+      return res.json({
+        success: false,
+        validation: true,
+        message: "कृपया ट्रेन का नाम, गंतव्य स्टेशन, स्टेशन का नाम और आगमन/प्रस्थान बताइए।",
+        parsedQuery
+      });
     }
 
-  ]
+    console.log("QUERY:", query);
+    console.log("TRAIN FROM PARSER:", parsedQuery.trainText);
 
-};
+    const searchedTrain = await findTrainByName(parsedQuery.trainText);
+    if (!searchedTrain) {
+      return res.json({ success: false, message: "Train not found" });
+    }
 
-console.log(
-  "LIVE SEARCH TRAIN:",
-  matchedTrain
-);
-  
-    // STATION FIND
+    const matchedTrain = {
+      number: searchedTrain.number,
+      hindi: parsedQuery.trainText,
+      english: searchedTrain.name,
+      aliases: [],
+      stations: [
+        {
+          name: parsedQuery.stationText,
+          code: "",
+          arrival: "",
+          departure: ""
+        }
+      ]
+    };
 
-    let matchedStation =
-      matchedTrain.stations[0];
+    console.log("LIVE SEARCH TRAIN:", matchedTrain);
 
-    for(const station of matchedTrain.stations){
-
-      if(
-        query.includes(station.name)
-      ){
-
-        matchedStation =
-          station;
-
+    let matchedStation = matchedTrain.stations[0];
+    for (const station of matchedTrain.stations) {
+      if (query.includes(station.name)) {
+        matchedStation = station;
         break;
       }
     }
 
-    // LIVE FETCH
+    // Default values
+    let liveStatus = "📡 लाइव जानकारी उपलब्ध नहीं है";
+    let delayMinutes = 0;
+    let currentLocation = "";
+    let nextStation = "";
+    let platformNumber = "";
+    let statusAsOf = "";
+    let distanceInfo = "";
+    let stationETA = null;
+    let eta = "";
+    let etd = "";
+    let arrivalDelay = 0;
+    let departureDelay = 0;
+    let stationPlatform = "";
 
-let liveStatus =
-  "📡 लाइव जानकारी उपलब्ध नहीं है";
+    const sourceUrl = `https://www.railyatri.in/live-train-status/${matchedTrain.number}`;
+    console.log("TRAIN NUMBER:", matchedTrain.number);
+    console.log("SOURCE URL:", sourceUrl);
 
-let delayMinutes = 0;
+    try {
+      const response = await fetch(sourceUrl);
+      const html = await response.text();
 
-// NEW
-let currentLocation = "";
-let nextStation = "";
-let platformNumber = "";
-let statusAsOf = "";
-let distanceInfo = "";
+      console.log("HTML LENGTH:", html.length);
+      console.log("__NEXT_DATA__:", html.includes("__NEXT_DATA__"));
 
-let stationETA = null;
+      const nextDataMatch = html.match(/<script id="__NEXT_DATA__"[^>]*>(.*?)<\/script>/s);
+      if (nextDataMatch) {
+        try {
+          const json = JSON.parse(nextDataMatch[1]);
+          const lts = json?.props?.pageProps?.ltsData;
+          const routeStations = json?.props?.pageProps?.timeTableData?.[0]?.route || [];
 
-let eta = "";
-let etd = "";
-let arrivalDelay = 0;
-let departureDelay = 0;
-let stationPlatform = "";    
+          stationETA = findStationETA(lts, parsedQuery.stationText);
 
-const sourceUrl =
+          if (!stationETA && routeStations.length > 0) {
+            const search = (parsedQuery.stationText || "").toLowerCase();
+            for (const station of routeStations) {
+              const stationName = (station.station_name || "").toLowerCase();
+              if (stationName.includes(search)) {
+                stationETA = {
+                  stationName: station.station_name,
+                  eta: station.eta || station.sta || "",
+                  etd: station.etd || station.std || "",
+                  arrivalDelay: station.arrival_delay || 0,
+                  departureDelay: station.departure_delay || 0,
+                  platformNumber: station.platform_number || ""
+                };
+                break;
+              }
+            }
+          }
+        } catch (err) {
+          console.log("ETA ERROR:", err.message);
+        }
+      }
 
-  `https://www.railyatri.in/live-train-status/${matchedTrain.number}`;
+      const parsed = extractLiveStatus(html);
+      console.log("PARSED DATA:", JSON.stringify(parsed, null, 2));
 
-console.log(
-  "TRAIN NUMBER:",
-  matchedTrain.number
-);
+      liveStatus = parsed.liveStatus;
+      delayMinutes = parsed.delayMinutes;
+      currentLocation = parsed.currentLocation || "";
+      nextStation = parsed.nextStation || "";
+      platformNumber = parsed.platformNumber || "";
+      statusAsOf = parsed.statusAsOf || "";
+      distanceInfo = parsed.distanceInfo || "";
 
-console.log(
-  "SOURCE URL:",
-  sourceUrl
-);
+      function formatRailTime(value) {
+        if (!value) return "";
+        if (typeof value === "string" && value.includes(":")) return value;
+        const num = parseInt(value);
+        if (isNaN(num)) return "";
+        const hours = Math.floor(num / 60);
+        const mins = num % 60;
+        return `${String(hours).padStart(2,"0")}:${String(mins).padStart(2,"0")}`;
+      }
 
-try{
+      if (stationETA) {
+        eta = formatRailTime(stationETA.eta);
+        etd = formatRailTime(stationETA.etd);
+        arrivalDelay = stationETA.arrivalDelay || 0;
+        departureDelay = stationETA.departureDelay || 0;
+        stationPlatform = stationETA.platformNumber || "";
+      }
 
-      console.log(
-        "FETCH:",
-        sourceUrl
-      );
-
-      const response =
-        await fetch(sourceUrl);
-  
-      const html =
-  await response.text();
-
-console.log(
-  "HTML LENGTH:",
-  html.length
-);
-
-console.log(
-  "__NEXT_DATA__:",
-  html.includes("__NEXT_DATA__")
-);
-
-console.log(
-  html.includes("Next Stop")
-);
-
-console.log(
-  html.includes("Currently")
-);
-
-console.log(
-  html.includes("__NEXT_DATA__")
-);
-      
-  const nextDataMatch = html.match(
-  /<script id="__NEXT_DATA__"[^>]*>(.*?)<\/script>/s
-);
-
-if(nextDataMatch){
-
-  console.log(
-    "NEXT_DATA FOUND"
-  );
-
-  console.log(
-    nextDataMatch[1].slice(0,3000)
-  );
-
-}else{
-
-  console.log(
-    "NEXT_DATA NOT FOUND"
-  );
-
-}
-
-
-const nextDataMatch2 = html.match(
-  /<script id="__NEXT_DATA__"[^>]*>(.*?)<\/script>/s
-);
-
-if(nextDataMatch2){
-
-  try{
-
-  const json = JSON.parse(
-  nextDataMatch2[1]
-);
-console.log(
-  "PAGE PROPS KEYS:",
-  Object.keys(
-    json?.props?.pageProps || {}
-  )
-);
-
-console.log(
-  "HAS LTS:",
-  !!json?.props?.pageProps?.ltsData
-);
-
-console.log(
-  "HAS TIMETABLE:",
-  !!json?.props?.pageProps?.timeTableData
-);
-const lts =
-  json?.props?.pageProps?.ltsData;
-
-const routeStations =
-  json?.props?.pageProps
-    ?.timeTableData?.[0]
-    ?.route || [];
-
-stationETA =
-  findStationETA(
-    lts,
-    parsedQuery.stationText
-  );
-
-if(
-  !stationETA &&
-  routeStations.length > 0
-){
-
-  const stationMap = {
-
-  "अजमेर":"ajmer",
-  "जयपुर":"jaipur",
-  "दिल्ली":"delhi",
-  "जोधपुर":"jodhpur",
-  "वाराणसी":"varanasi"
-
-};
-
-const search =
-(
-  stationMap[
-    parsedQuery.stationText
-  ] ||
-  parsedQuery.stationText
-)
-.toLowerCase();
-  console.log(
-  "SEARCHING STATION:",
-  search
-);
-
-console.log(
-  "ROUTE SAMPLE:",
-  routeStations
-    .slice(0,20)
-    .map(x => x.station_name)
-);
-console.log(
-  "ALL ROUTE STATIONS:",
-  routeStations.map(
-    x => x.station_name
-  )
-);
-  for(
-    const station
-    of routeStations
-  ){
-if(
-  station.station_name
-    .toLowerCase()
-    .includes("ajmer")
-){
-  console.log(
-    "AJMER FOUND IN ROUTE:",
-    JSON.stringify(
-      station,
-      null,
-      2
-    )
-  );
-}
-    const stationName =
-      (
-        station.station_name || ""
-      )
-      .toLowerCase();
-    if(
-  stationName.includes("ajmer")
-){
-  console.log(
-    "AJMER FOUND IN ROUTE:",
-    station.station_name
-  );
-}
-
-    if(
-
-  stationName.includes(search)
-
-  ||
-
-  (
-    search.includes("अजमेर")
-    &&
-    stationName.includes("ajmer")
-  )
-
-){
-
-      stationETA = {
-
-  stationName:
-    station.station_name,
-
-  eta:
-    station.eta ||
-    station.sta ||
-    "",
-
-  etd:
-    station.etd ||
-    station.std ||
-    "",
-
-  arrivalDelay:
-    station.arrival_delay || 0,
-
-  departureDelay:
-    station.departure_delay || 0,
-
-  platformNumber:
-    station.platform_number || ""
-
-};
-
-      break;
+    } catch (error) {
+      console.log("LIVE ERROR:", error.message);
     }
-  }
-}
 
-console.log(
-  "STATION ETA RAW:",
-  stationETA
-);
-    console.log(
-  "TIMETABLE ROUTE COUNT:",
-  json?.props?.pageProps
-      ?.timeTableData?.[0]
-      ?.route?.length
-);
-    console.log(
-  "FIRST ROUTE STATION:",
-  JSON.stringify(
-    json?.props?.pageProps
-      ?.timeTableData?.[0]
-      ?.route?.[0],
-    null,
-    2
-  )
-);
-
-  }catch(err){
-
-    console.log(
-      "ETA ERROR:",
-      err.message
-    );
-
-  }
-}
-      const parsed =
-        extractLiveStatus(html);
-      console.log(
-
-  "PARSED DATA:",
-
-  JSON.stringify(parsed, null, 2)
-
-);
-
-      liveStatus =
-  parsed.liveStatus;
-
-delayMinutes =
-  parsed.delayMinutes;
-
-currentLocation =
-  parsed.currentLocation || "";
-
-nextStation =
-  parsed.nextStation || "";
-platformNumber =
-  parsed.platformNumber || "";
-
-statusAsOf =
-  parsed.statusAsOf || "";
-
-distanceInfo =
-  parsed.distanceInfo || "";
-
-function formatRailTime(value){
-
-  if(
-    value === undefined ||
-    value === null ||
-    value === ""
-  ){
-    return "";
-  }
-
-  // पहले से HH:MM है
-  if(
-    typeof value === "string" &&
-    value.includes(":")
-  ){
-    return value;
-  }
-
-  const num = parseInt(value);
-
-  if(isNaN(num)){
-    return "";
-  }
-
-  const hours =
-    Math.floor(num / 60);
-
-  const mins =
-    num % 60;
-
-  return `${String(hours).padStart(2,"0")}:${String(mins).padStart(2,"0")}`;
-}
-  if(stationETA){
-
-  eta =
-    formatRailTime(
-      stationETA.eta
-    );
-
-  etd =
-    formatRailTime(
-      stationETA.etd
-    );
-
-  arrivalDelay =
-    stationETA.arrivalDelay || 0;
-
-  departureDelay =
-    stationETA.departureDelay || 0;
-
-  stationPlatform =
-    stationETA.platformNumber || "";
-}      
-
-    }catch(error){
-
-      console.log(
-        "LIVE ERROR:",
-        error.message
-      );
-    }
-    console.log(
-
-  "FINAL RESPONSE:",
-
-  JSON.stringify({
-
-  train:matchedTrain.hindi,
-  station:matchedStation.name,
-  liveStatus,
-  delayMinutes,
-  currentLocation,
-  nextStation,
-  eta,
-  etd,
-  stationPlatform
-
-}, null, 2)
-
-);
+    console.log("FINAL RESPONSE:", JSON.stringify({
+      train: matchedTrain.hindi,
+      station: matchedStation.name,
+      liveStatus,
+      delayMinutes,
+      currentLocation,
+      nextStation,
+      eta,
+      etd,
+      stationPlatform
+    }, null, 2));
 
     // RESPONSE
-
     res.json({
-
-      success:true,
-
-      train:{
-
-        number:
-          matchedTrain.number,
-
-        hindi:
-          matchedTrain.hindi,
-
-        english:
-          matchedTrain.english
+      success: true,
+      train: {
+        number: matchedTrain.number,
+        hindi: matchedTrain.hindi,
+        english: matchedTrain.english
       },
-
-      station:{
-
-        name:
-          matchedStation.name,
-
-        code:
-          matchedStation.code,
-
-        arrival:
-          matchedStation.arrival,
-
-        departure:
-          matchedStation.departure
+      station: {
+        name: matchedStation.name,
+        code: matchedStation.code,
+        arrival: matchedStation.arrival,
+        departure: matchedStation.departure
       },
       liveStatus,
       delayMinutes,
       currentLocation,
       nextStation,
-
       platformNumber,
       statusAsOf,
       distanceInfo,
@@ -1269,29 +854,19 @@ function formatRailTime(value){
       arrivalDelay,
       departureDelay,
       stationPlatform,
-
       sourceUrl
     });
 
-  }catch(error){
-
-    res.json({
-
-      success:false,
-
-      error:error.message
-    });
+  } catch (error) {
+    res.json({ success: false, error: error.message });
   }
 });
 
-// START
-
-const PORT =
-  process.env.PORT || 3000;
-
+// =============================
+// START SERVER
+// =============================
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-
-  console.log(
-    `RailSafar backend running on ${PORT}`
-  );
+  console.log(`RailSafar backend running on ${PORT}`);
 });
+
