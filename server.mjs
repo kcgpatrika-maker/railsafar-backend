@@ -686,9 +686,46 @@ console.log(
   JSON.stringify(query, null, 2)
 );
 
+    const destinationText =
+  req.body.destination || "";
+
+const trainText =
+  req.body.train || "";
+
+const stationText =
+  req.body.station || "";
+
+console.log(
+  "DESTINATION:",
+  destinationText
+);
+
+console.log(
+  "TRAIN:",
+  trainText
+);
+
+console.log(
+  "STATION:",
+  stationText
+);
+
+const searchedTrain =
+  await findTrainByName(
+    trainText
+  );
+
+console.log(
+  "TRAIN RESULT:",
+  searchedTrain
+);
+
 return res.json({
   success:true,
-  body:query
+  destinationText,
+  trainText,
+  stationText,
+  searchedTrain
 });
 
     console.log("PARSED QUERY:", JSON.stringify(parsedQuery, null, 2));
