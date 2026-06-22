@@ -679,8 +679,17 @@ app.get("/test-search", async (req,res)=>{
 // =============================
 app.post("/rail-query", async (req, res) => {
   try {
-    const query = req.body.query || "";
-    const parsedQuery = parseRailQuery(query);
+    const query = req.body;
+
+console.log(
+  "BODY RECEIVED:",
+  JSON.stringify(query, null, 2)
+);
+
+return res.json({
+  success:true,
+  body:query
+});
 
     console.log("PARSED QUERY:", JSON.stringify(parsedQuery, null, 2));
 
