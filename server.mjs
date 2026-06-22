@@ -685,7 +685,6 @@ console.log(
   "BODY RECEIVED:",
   JSON.stringify(query, null, 2)
 );
-
     const destinationText =
   req.body.destination || "";
 
@@ -727,7 +726,6 @@ return res.json({
   stationText,
   searchedTrain
 });
-
     console.log("PARSED QUERY:", JSON.stringify(parsedQuery, null, 2));
 
     if (!parsedQuery.isValid) {
