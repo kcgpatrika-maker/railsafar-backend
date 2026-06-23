@@ -765,6 +765,15 @@ const parsedQuery = {
     };
 
     console.log("LIVE SEARCH TRAIN:", matchedTrain);
+    console.log("STEP-1");
+    let matchedStation =
+  matchedTrain.stations[0];
+
+console.log("STEP-2");
+    const sourceUrl =
+  `https://www.railyatri.in/live-train-status/${matchedTrain.number}`;
+
+console.log("STEP-3");
 
     let matchedStation = matchedTrain.stations[0];
     for (const station of matchedTrain.stations) {
