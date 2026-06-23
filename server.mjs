@@ -462,9 +462,16 @@ async function findTrainByName(trainName) {
     trainName = trainNameMap[trainName] || trainName;
     trainName = transliterateHindiToEnglish(trainName);
 
-    if (!trainName.toLowerCase().includes("express")) {
-      trainName = trainName.trim() + " Express";
-    }
+    const lowerName = trainName.toLowerCase();
+
+    if (
+    !lowerName.includes("express") &&
+    !lowerName.includes("intercity") &&
+    !lowerName.includes("superfast") &&
+    !lowerName.includes("sf")
+   ) {
+    trainName = trainName.trim() + " Express";
+  }
 
     console.log("NORMALIZED TRAIN:", trainName);
 
