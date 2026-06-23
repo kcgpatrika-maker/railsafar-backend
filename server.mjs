@@ -719,13 +719,17 @@ console.log(
   testTrain
 );
 
-return res.json({
-  success:true,
-  destinationText,
+const parsedQuery = {
+
   trainText,
+
   stationText,
-  testTrain
-});
+
+  destinationText,
+
+  isValid:true
+
+};
     console.log("PARSED QUERY:", JSON.stringify(parsedQuery, null, 2));
 
     if (!parsedQuery.isValid) {
