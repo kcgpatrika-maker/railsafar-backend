@@ -709,14 +709,14 @@ console.log(
   stationText
 );
 
-const searchedTrain =
+const testTrain =
   await findTrainByName(
     trainText
   );
 
 console.log(
   "TRAIN RESULT:",
-  searchedTrain
+  testTrain
 );
 
 return res.json({
@@ -724,7 +724,7 @@ return res.json({
   destinationText,
   trainText,
   stationText,
-  searchedTrain
+  testTrain
 });
     console.log("PARSED QUERY:", JSON.stringify(parsedQuery, null, 2));
 
