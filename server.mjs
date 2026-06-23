@@ -419,6 +419,7 @@ return null;
 // =============================
 async function findTrainByName(trainName) {
   console.log("TRAIN NAME INPUT:", trainName);
+  console.log("BEFORE NORMALIZE:", trainName);
 
   try {
     if (!trainName) return null;
@@ -473,7 +474,9 @@ async function findTrainByName(trainName) {
     trainName = trainName.trim() + " Express";
   }
 
+    console.log("AFTER MAP:", trainName);
     console.log("NORMALIZED TRAIN:", trainName);
+    
 
     const q = encodeURIComponent(trainName.split(" ")[0]);
     const url = `https://search.railyatri.in/mobile/trainsearch?q=${q}&slip_type=1`;
