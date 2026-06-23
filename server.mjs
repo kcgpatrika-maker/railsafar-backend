@@ -788,12 +788,6 @@ for (const station of matchedTrain.stations) {
 
 console.log("STEP-3");
     
-      if (query.includes(station.name)) {
-        matchedStation = station;
-        break;
-      }
-    }
-
     // Default values
     let liveStatus = "📡 लाइव जानकारी उपलब्ध नहीं है";
     let delayMinutes = 0;
