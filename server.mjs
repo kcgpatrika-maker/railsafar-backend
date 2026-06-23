@@ -450,7 +450,15 @@ async function findTrainByName(trainName) {
         "रानीखेत":"Ranikhet",
         "शताब्दी":"Shatabdi",
         "राजधानी":"Rajdhani",
-        "जन शताब्दी":"Jan Shatabdi"
+        "जन शताब्दी":"Jan Shatabdi",
+        "आगरा फोर्ट":"Agra Fort",
+        "इंटरसिटी":"Intercity",
+        "प्रयागराज":"Prayagraj",
+        "संगम":"Sangam",
+        "गंगा गोमती":"Ganga Gomti",
+        "कानपुर":"Kanpur",
+        "अलवर":"Alwar",
+        "अजमेर":"Ajmer"
       };
       for(const key in map){
         if(text.includes(key)){
@@ -460,22 +468,49 @@ async function findTrainByName(trainName) {
       return text;
     }
 
-    trainName = trainNameMap[trainName] || trainName;
-    trainName = transliterateHindiToEnglish(trainName);
+    trainName =
+  trainNameMap[trainName] ||
+  trainName;
 
-    const lowerName = trainName.toLowerCase();
+trainName =
+  transliterateHindiToEnglish(
+    trainName
+  );
 
-    if (
-    !lowerName.includes("express") &&
-    !lowerName.includes("intercity") &&
-    !lowerName.includes("superfast") &&
-    !lowerName.includes("sf")
-   ) {
-    trainName = trainName.trim() + " Express";
-  }
+console.log(
+  "AFTER TRANSLITERATE:",
+  trainName
+);
 
-    console.log("AFTER MAP:", trainName);
-    console.log("NORMALIZED TRAIN:", trainName);
+const lowerName =
+  trainName.toLowerCase();
+
+if (
+
+  !lowerName.includes("express") &&
+  !lowerName.includes("intercity") &&
+  !lowerName.includes("inter city") &&
+  !lowerName.includes("superfast") &&
+  !lowerName.includes("super fast") &&
+  !lowerName.includes("sf") &&
+  !lowerName.includes("passenger") &&
+  !lowerName.includes("vande bharat") &&
+  !lowerName.includes("humsafar") &&
+  !lowerName.includes("duronto") &&
+  !lowerName.includes("shatabdi") &&
+  !lowerName.includes("rajdhani")
+
+){
+
+  trainName =
+    trainName.trim() +
+    " Express";
+}
+
+console.log(
+  "NORMALIZED TRAIN:",
+  trainName
+);
     
 
     const q = encodeURIComponent(trainName.split(" ")[0]);
