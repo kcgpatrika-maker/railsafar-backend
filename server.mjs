@@ -541,7 +541,30 @@ console.log(
     return null;
   }
 }
+// =============================
+// SMART TRAIN FINDER
+// =============================
+async function smartTrainFinder(
+  destination,
+  station,
+  trainName
+){
 
+  console.log("SMART SEARCH");
+
+  console.log("DESTINATION:", destination);
+
+  console.log("STATION:", station);
+
+  console.log("TRAIN:", trainName);
+
+  // अभी पुराने सिस्टम का उपयोग करेंगे
+
+  return await findTrainByName(
+    trainName
+  );
+
+}
 // =============================
 // CONFIRM TRAIN QUERY (FIXED)
 // =============================
@@ -789,7 +812,16 @@ const parsedQuery = {
     console.log("QUERY:", query);
     console.log("TRAIN FROM PARSER:", parsedQuery.trainText);
 
-    const searchedTrain = await findTrainByName(parsedQuery.trainText);
+    const searchedTrain =
+  await smartTrainFinder(
+
+    parsedQuery.destinationText,
+
+    parsedQuery.stationText,
+
+    parsedQuery.trainText
+
+  );
     if (!searchedTrain) {
       return res.json({ success: false, message: "Train not found" });
     }
