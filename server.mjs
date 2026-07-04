@@ -558,11 +558,23 @@ async function smartTrainFinder(
 
   console.log("TRAIN:", trainName);
 
-  // अभी पुराने सिस्टम का उपयोग करेंगे
+  // Step-1
+  // ट्रेन के नाम से Search
 
-  return await findTrainByName(
-    trainName
-  );
+  const train =
+    await findTrainByName(
+      trainName
+    );
+
+  if(!train){
+
+    return null;
+
+  }
+
+  // आगे यहीं Route Check होगा
+
+  return train;
 
 }
 // =============================
