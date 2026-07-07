@@ -754,6 +754,93 @@ app.get("/test-search", async (req,res)=>{
   }
 
 });
+// =====================================
+// SMART SEARCH ENGINE V2
+// =====================================
+
+// ---------- CLEAN TEXT ----------
+function cleanText(text = "") {
+
+  return text
+    .toLowerCase()
+    .replace(/[-_,]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+
+}
+
+// ---------- NORMALIZE TRAIN ----------
+function normalizeTrainName(name = "") {
+
+  let train = cleanText(name);
+
+  train = train
+    .replace(/\bsf\b/g, "")
+    .replace(/\bsuperfast\b/g, "")
+    .replace(/\bexpress\b/g, "")
+    .replace(/\bexp\b/g, "")
+    .replace(/\bintercity\b/g, "")
+    .replace(/\bpassenger\b/g, "")
+    .replace(/\bmemu\b/g, "")
+    .replace(/\bdemu\b/g, "")
+    .replace(/\bspecial\b/g, "")
+    .trim();
+
+  return train;
+
+}
+
+// ---------- NORMALIZE STATION ----------
+function normalizeStationName(name = "") {
+
+  let station = cleanText(name);
+
+  station = station
+    .replace(/\bjunction\b/g, "")
+    .replace(/\bjn\b/g, "")
+    .replace(/\bterminal\b/g, "")
+    .replace(/\bcantt\b/g, "")
+    .trim();
+
+  return station;
+
+}
+
+// ---------- SCORE ----------
+function calculateTrainScore(
+  searchName,
+  resultName
+){
+
+  let score = 0;
+
+  const search =
+    normalizeTrainName(searchName);
+
+  const result =
+    normalizeTrainName(resultName);
+
+  if(search === result){
+
+    score += 100;
+
+  }
+
+  else if(result.includes(search)){
+
+    score += 80;
+
+  }
+
+  else if(search.includes(result)){
+
+    score += 60;
+
+  }
+
+  return score;
+
+}
 // =============================
 // MAIN ROUTE (continued)
 // =============================
