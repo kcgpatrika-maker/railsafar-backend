@@ -602,12 +602,31 @@ async function confirmTrainQuery(queryText, res) {
     console.log("STATION:", stationName);
     console.log("DESTINATION:", destinationName);
 
-    // Step 3: Train search
-    const trainResult = await findTrainByName(trainName);
-    if (!trainResult) {
-      return res.json({ success:false, message:"❌ ट्रेन नहीं मिली: " + trainName });
-    }
+// Step 3: Smart Train Search
 
+const trainResult =
+await smartTrainFinder(
+
+    destinationName,
+
+    stationName,
+
+    trainName
+
+);
+
+if(!trainResult){
+
+    return res.json({
+
+        success:false,
+
+        message:
+        "❌ ट्रेन नहीं मिली"
+
+    });
+
+}
     console.log("MATCH FOUND:", trainResult);
 
     // Step 4: API call for live status
