@@ -85,27 +85,106 @@ result.hasStation = true;
 // =====================
 // TRAIN NAME
 // =====================
+const trainKeywords = [
 
-const trainMatch =
-query.match(
-/([^\n]+?)(एक्सप्रेस|superfast|सुपरफास्ट)/i
-);
+"एक्सप्रेस",
 
-if (trainMatch) {
+"express",
 
-let trainName =
-trainMatch[0].trim();
+"superfast",
 
-trainName =
-trainName.replace(
-/^.*?जाने\s+वाली\s+/i,
-""
-);
+"सुपरफास्ट",
 
-result.trainText = trainName;
-result.hasTrain = true;
+"intercity",
+
+"इंटरसिटी",
+
+"passenger",
+
+"पैसेंजर",
+
+"mail",
+
+"मेल",
+
+"memu",
+
+"demu",
+
+"jan shatabdi",
+
+"जन शताब्दी",
+
+"shatabdi",
+
+"शताब्दी",
+
+"rajdhani",
+
+"राजधानी",
+
+"duronto",
+
+"दुरंतो",
+
+"garib rath",
+
+"गरीब रथ",
+
+"humsafar",
+
+"हमसफर",
+
+"vande bharat",
+
+"वंदे भारत"
+
+];
+
+let trainFound = "";
+
+for(const keyword of trainKeywords){
+
+    const regex =
+    new RegExp(
+        `([^\\n]+?${keyword})`,
+        "i"
+    );
+
+    const match =
+    query.match(regex);
+
+    if(match){
+
+        trainFound =
+        match[1].trim();
+
+        break;
+
+    }
+
 }
 
+if(trainFound){
+
+    trainFound =
+    trainFound.replace(
+        /^.*?जाने\s+वाली\s+/i,
+        ""
+    );
+
+    trainFound =
+    trainFound.replace(
+        /^.*?going\s+to\s+/i,
+        ""
+    );
+
+    result.trainText =
+    trainFound.trim();
+
+    result.hasTrain = true;
+
+}
 // =====================
 // VALIDATION
 // =====================
