@@ -610,7 +610,7 @@ return null;
   }
 }
 // =============================
-// SMART TRAIN FINDER
+// SMART TRAIN FINDER V2
 // =============================
 async function smartTrainFinder(
   destination,
@@ -618,29 +618,49 @@ async function smartTrainFinder(
   trainName
 ){
 
-  console.log("SMART SEARCH");
+  console.log("========== SMART TRAIN FINDER ==========");
 
-  console.log("DESTINATION:", destination);
-
-  console.log("STATION:", station);
-
-  console.log("TRAIN:", trainName);
+  console.log("DESTINATION :", destination);
+  console.log("STATION     :", station);
+  console.log("TRAIN INPUT :", trainName);
 
   // Step-1
-  // ट्रेन के नाम से Search
+  // Search by train name
 
-  const train =
+  let train =
     await findTrainByName(
       trainName
     );
 
   if(!train){
 
+    console.log("❌ TRAIN NOT FOUND");
+
     return null;
 
   }
 
-  // आगे यहीं Route Check होगा
+  console.log("✅ TRAIN FOUND");
+
+  console.log(train);
+
+  // Step-2
+  // आगे Route Matching यहीं लगेगा
+
+  train.destination =
+    destination;
+
+  train.station =
+    station;
+
+  console.log(
+    "SMART RESULT:",
+    JSON.stringify(
+      train,
+      null,
+      2
+    )
+  );
 
   return train;
 
