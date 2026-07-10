@@ -690,33 +690,49 @@ async function confirmTrainQuery(queryText, res) {
     console.log("STATION:", stationName);
     console.log("DESTINATION:", destinationName);
 
-// Step 3: Smart Train Search
+// =======================================
+// STEP-3 SMART TRAIN FINDER
+// =======================================
 
 const trainResult =
 await smartTrainFinder(
 
-    destinationName,
+  destinationName,
 
-    stationName,
+  stationName,
 
-    trainName
+  trainName
 
 );
 
 if(!trainResult){
 
-    return res.json({
+  return res.json({
 
-        success:false,
+    success:false,
 
-        message:
-        "❌ ट्रेन नहीं मिली"
+    message:
+      "❌ ट्रेन पहचान में नहीं आई"
 
-    });
+  });
 
 }
-    console.log("MATCH FOUND:", trainResult);
 
+console.log(
+
+"SMART MATCH:",
+
+JSON.stringify(
+
+trainResult,
+
+null,
+
+2
+
+)
+
+);
     // Step 4: API call for live status
     const statusUrl = `https://api.railyatri.in/v1/train/${trainResult.number}/status?station=${encodeURIComponent(stationName)}&dest=${encodeURIComponent(destinationName)}`;
     console.log("STATUS URL:", statusUrl);
