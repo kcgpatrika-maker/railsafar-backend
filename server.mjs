@@ -512,27 +512,95 @@ console.log(
   trainName
 );
     
+// ==========================
+// SMART SEARCH V2
+// ==========================
 
-    const q = encodeURIComponent(trainName.split(" ")[0]);
-    const url = `https://search.railyatri.in/mobile/trainsearch?q=${q}&slip_type=1`;
+const words =
+trainName
+.split(/\s+/)
+.filter(x=>x.length>2);
 
-    const response = await fetch(url);
-    const data = await response.json();
+const q =
+encodeURIComponent(words.join(" "));
 
-    console.log("SEARCH RESULTS:", JSON.stringify(data.slice(0, 10), null, 2));
+const url =
+`https://search.railyatri.in/mobile/trainsearch?q=${q}&slip_type=1`;
 
-    const searchText = trainName.split(" ")[0].toLowerCase();
-    for (const item of data) {
-      const trainNumber = item[0];
-      const trainNameFound = item[1];
-      if (!trainNameFound) continue;
+const response =
+await fetch(url);
 
-      if (trainNameFound.toLowerCase().includes(searchText)) {
-        console.log("MATCH FOUND:", trainNumber, trainNameFound);
-        return { number: trainNumber, name: trainNameFound };
-      }
-    }
+const data =
+await response.json();
 
+console.log(
+"SEARCH RESULTS:",
+JSON.stringify(
+data.slice(0,20),
+null,
+2
+)
+);
+
+let bestTrain=null;
+let bestScore=0;
+
+for(const item of data){
+
+const trainNumber=
+item[0];
+
+const trainNameFound=
+item[1] || "";
+
+const score=
+calculateTrainScore(
+
+trainName,
+
+trainNameFound
+
+);
+
+if(score>bestScore){
+
+bestScore=score;
+
+bestTrain={
+
+number:trainNumber,
+
+name:trainNameFound
+
+};
+
+}
+
+}
+
+if(bestTrain){
+
+console.log(
+
+"BEST MATCH:",
+
+bestTrain,
+
+"SCORE:",
+
+bestScore
+
+);
+
+return bestTrain;
+
+}
+
+console.log(
+"NO TRAIN MATCH FOUND"
+);
+
+return null;
     console.log("NO TRAIN MATCH FOUND");
     return null;
 
