@@ -620,22 +620,28 @@ async function smartTrainFinder(
   console.log("STATION     :", station);
   console.log("TRAIN INPUT :", trainName);
 
-  // Step-1
-  // Search by train name
+const candidates =
+await findTrainByName(
+    trainName
+);
 
-  let train =
-    await findTrainByName(
-      trainName
-    );
-
-  if(!train){
+if (
+    !candidates ||
+    candidates.length === 0
+) {
 
     console.log("❌ TRAIN NOT FOUND");
 
     return null;
 
-  }
+}
 
+const train = candidates[0];
+
+console.log(
+    "SELECTED TRAIN:",
+    JSON.stringify(train, null, 2)
+);
   console.log("✅ TRAIN FOUND");
 
   console.log(train);
