@@ -542,68 +542,64 @@ null,
 )
 );
 
-let bestTrain=null;
-let bestScore=0;
+// ==========================
+// BUILD CANDIDATE LIST
+// ==========================
 
-for(const item of data){
+const candidateTrains = [];
 
-const trainNumber=
-item[0];
+for (const item of data) {
 
-const trainNameFound=
-item[1] || "";
+    const trainNumber = item[0];
 
-const score=
-calculateTrainScore(
+    const trainNameFound = item[1] || "";
 
-trainName,
+    const score = calculateTrainScore(
+        trainName,
+        trainNameFound
+    );
 
-trainNameFound
+    candidateTrains.push({
+
+        number: trainNumber,
+
+        name: trainNameFound,
+
+        searchScore: score,
+
+        raw: item
+
+    });
+
+}
+
+// Highest Search Score पहले रहे
+
+candidateTrains.sort(
+
+    (a, b) =>
+
+        b.searchScore - a.searchScore
 
 );
-
-if(score>bestScore){
-
-bestScore=score;
-
-bestTrain={
-
-number:trainNumber,
-
-name:trainNameFound
-
-};
-
-}
-
-}
-
-if(bestTrain){
 
 console.log(
 
-"BEST MATCH:",
+    "CANDIDATE TRAINS:",
 
-bestTrain,
+    JSON.stringify(
 
-"SCORE:",
+        candidateTrains,
 
-bestScore
+        null,
+
+        2
+
+    )
 
 );
 
-return bestTrain;
-
-}
-
-console.log(
-"NO TRAIN MATCH FOUND"
-);
-
-return null;
-    console.log("NO TRAIN MATCH FOUND");
-    return null;
-
+return candidateTrains;
   } catch (error) {
     console.log("TRAIN SEARCH ERROR:", error.message);
     return null;
