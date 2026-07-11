@@ -1121,6 +1121,20 @@ console.log("STEP-3");
           const json = JSON.parse(nextDataMatch[1]);
           const lts = json?.props?.pageProps?.ltsData;
           const routeStations = json?.props?.pageProps?.timeTableData?.[0]?.route || [];
+          console.log(
+  "ROUTE COUNT:",
+  routeStations.length
+);
+
+console.log(
+  "FIRST ROUTE STATION:",
+  JSON.stringify(routeStations[0], null, 2)
+);
+
+console.log(
+  "LAST ROUTE STATION:",
+  JSON.stringify(routeStations[routeStations.length - 1], null, 2)
+);
 
           stationETA = findStationETA(lts, parsedQuery.stationText);
 
