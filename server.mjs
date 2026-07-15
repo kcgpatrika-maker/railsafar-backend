@@ -89,22 +89,37 @@ console.log(
 
     delayMinutes:
       lts.delay || 0,
-  currentLocation:
-    lts.current_station_name || "",
+currentLocation:
 
-  nextStation:
-    lts.upcoming_stations?.[0]?.station_name || "",
+    lts.current_station_name ||
 
-  platformNumber:
+    lts.source_stn_name ||
+
+    "",
+
+nextStation:
+
+    lts.next_station_name ||
+
+    "",
+
+platformNumber:
+
     lts.platform_number || "",
 
-  statusAsOf:
-    lts.status_as_of || "",
+statusAsOf:
 
-  distanceInfo:
-    lts.upcoming_stations?.[0]
-      ?.distance_from_current_station_txt || ""
+    lts.status_as_of ||
 
+    lts.title ||
+
+    "",
+
+distanceInfo:
+
+    lts.distance_info ||
+
+    ""
 };
 
     }
