@@ -621,6 +621,80 @@ return candidateTrains;
   }
 }
 // =============================
+// FETCH ROUTE FOR CANDIDATE
+// =============================
+async function fetchCandidateRoutes(candidates){
+
+    for(const train of candidates){
+
+        try{
+
+            const url =
+            `https://www.railyatri.in/live-train-status/${train.number}`;
+
+            console.log(
+                "ROUTE FETCH:",
+                train.number
+            );
+
+            const response =
+            await fetch(url);
+
+            const html =
+            await response.text();
+
+            const match =
+            html.match(
+                /<script id="__NEXT_DATA__"[^>]*>(.*?)<\/script>/s
+            );
+
+            if(!match){
+
+                train.route = [];
+                continue;
+
+            }
+
+            const json =
+            JSON.parse(match[1]);
+
+            train.route =
+                json?.props?.pageProps?.timeTableData?.[0]?.route || [];
+
+            console.log(
+
+                "ROUTE STATIONS:",
+
+                train.number,
+
+                train.route.length
+
+            );
+
+        }
+
+        catch(err){
+
+            console.log(
+
+                "ROUTE ERROR:",
+
+                train.number,
+
+                err.message
+
+            );
+
+            train.route=[];
+
+        }
+
+    }
+
+    return candidates;
+
+}
+// =============================
 // SMART TRAIN FINDER V2
 // =============================
 async function smartTrainFinder(
@@ -639,7 +713,7 @@ const candidates =
 await findTrainByName(
     trainName
 );
-
+await fetchCandidateRoutes(candidates);
 if (
     !candidates ||
     candidates.length === 0
