@@ -714,6 +714,32 @@ await findTrainByName(
     trainName
 );
 await fetchCandidateRoutes(candidates);
+  console.log("========== ROUTE SUMMARY ==========");
+
+for (const train of candidates) {
+
+    console.log(
+        train.number,
+        train.name,
+        "ROUTE:",
+        train.route?.length || 0
+    );
+
+    if (train.route?.length > 0) {
+
+        console.log(
+            "FIRST:",
+            train.route[0].station_name
+        );
+
+        console.log(
+            "LAST:",
+            train.route[
+                train.route.length - 1
+            ].station_name
+        );
+    }
+}
 if (
     !candidates ||
     candidates.length === 0
