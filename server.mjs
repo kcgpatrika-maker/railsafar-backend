@@ -756,6 +756,8 @@ async function smartTrainFinder(
     //------------------------------------------------
 
     await fetchCandidateRoutes(candidates);
+    console.log("✅ ROUTES FETCH COMPLETED");
+    console.log("CANDIDATES:", candidates.length);
 
     console.log("========== ROUTE SCORING ==========");
 
