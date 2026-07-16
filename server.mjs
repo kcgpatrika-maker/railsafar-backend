@@ -698,92 +698,170 @@ async function fetchCandidateRoutes(candidates){
     return candidates;
 
 }
-// =============================
-// SMART TRAIN FINDER V2
-// =============================
+// ==========================================
+// SMART TRAIN FINDER 
+// ==========================================
+
 async function smartTrainFinder(
-  destination,
-  station,
-  trainName
-){
-
-  console.log("========== SMART TRAIN FINDER ==========");
-
-  console.log("DESTINATION :", destination);
-  console.log("STATION     :", station);
-  console.log("TRAIN INPUT :", trainName);
-
-const candidates =
-await findTrainByName(
+    destination,
+    station,
     trainName
-);
-await fetchCandidateRoutes(candidates);
-  console.log("========== ROUTE SUMMARY ==========");
-
-for (const train of candidates) {
-
-    console.log(
-        train.number,
-        train.name,
-        "ROUTE:",
-        train.route?.length || 0
-    );
-
-    if (train.route?.length > 0) {
-
-        console.log(
-            "FIRST:",
-            train.route[0].station_name
-        );
-
-        console.log(
-            "LAST:",
-            train.route[
-                train.route.length - 1
-            ].station_name
-        );
-    }
-}
-if (
-    !candidates ||
-    candidates.length === 0
 ) {
 
-    console.log("❌ TRAIN NOT FOUND");
+    console.log("========== SMART TRAIN FINDER ==========");
 
-    return null;
+    console.log("DESTINATION :", destination);
+    console.log("STATION     :", station);
+    console.log("TRAIN INPUT :", trainName);
 
-}
+    //------------------------------------------------
+    // Step-1
+    // Search Candidate Trains
+    //------------------------------------------------
 
-const train = candidates[0];
+    const candidates =
+        await findTrainByName(trainName);
 
-console.log(
-    "SELECTED TRAIN:",
-    JSON.stringify(train, null, 2)
-);
-  console.log("✅ TRAIN FOUND");
+    if (
+        !candidates ||
+        candidates.length === 0
+    ) {
 
-  console.log(train);
+        console.log("❌ TRAIN NOT FOUND");
 
-  // Step-2
-  // आगे Route Matching यहीं लगेगा
+        return null;
 
-  train.destination =
-    destination;
+    }
 
-  train.station =
-    station;
+    //------------------------------------------------
+    // Step-2
+    // Download Routes
+    //------------------------------------------------
 
-  console.log(
-    "SMART RESULT:",
-    JSON.stringify(
-      train,
-      null,
-      2
-    )
-  );
+    await fetchCandidateRoutes(candidates);
 
-  return train;
+    console.log("========== ROUTE SCORING ==========");
+
+    //------------------------------------------------
+    // Step-3
+    // Build Route Score
+    //------------------------------------------------
+
+    for (const train of candidates) {
+
+        const route =
+            train.route || [];
+
+        const result =
+            buildRouteScore(
+
+                route,
+
+                destination,
+
+                station
+
+            );
+
+        train.routeScore =
+            result.score;
+
+        train.routeReasons =
+            result.reasons;
+
+        train.finalScore =
+            (train.searchScore || 0) +
+            (train.routeScore || 0);
+
+        console.log(
+            "--------------------------------"
+        );
+
+        console.log(
+            train.number,
+            train.name
+        );
+
+        console.log(
+            "Search Score :",
+            train.searchScore
+        );
+
+        console.log(
+            "Route Score  :",
+            train.routeScore
+        );
+
+        console.log(
+            "Final Score  :",
+            train.finalScore
+        );
+
+        console.log(
+            "Reasons :",
+            result.reasons.join(", ")
+        );
+
+    }
+
+    //------------------------------------------------
+    // Step-4
+    // Sort using Final Score
+    //------------------------------------------------
+
+    candidates.sort(
+
+        (a, b) =>
+
+            (b.finalScore || 0) -
+
+            (a.finalScore || 0)
+
+    );
+
+    //------------------------------------------------
+    // Step-5
+    // Best Train
+    //------------------------------------------------
+
+    const bestTrain =
+        selectBestTrain(candidates);
+
+    if (!bestTrain) {
+
+        console.log(
+            "❌ NO BEST TRAIN"
+        );
+
+        return null;
+
+    }
+
+    bestTrain.destination =
+        destination;
+
+    bestTrain.station =
+        station;
+
+    console.log(
+        "========== BEST TRAIN =========="
+    );
+
+    console.log(
+
+        JSON.stringify(
+
+            bestTrain,
+
+            null,
+
+            2
+
+        )
+
+    );
+
+    return bestTrain;
 
 }
 // =============================
