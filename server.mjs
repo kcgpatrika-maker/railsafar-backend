@@ -756,10 +756,12 @@ async function smartTrainFinder(
     //------------------------------------------------
 
     await fetchCandidateRoutes(candidates);
+    console.log("STEP 1 PASSED");
     console.log("✅ ROUTES FETCH COMPLETED");
     console.log("CANDIDATES:", candidates.length);
 
     console.log("========== ROUTE SCORING ==========");
+    console.log("STEP 2 PASSED");
 
     //------------------------------------------------
     // Step-3
@@ -770,6 +772,7 @@ async function smartTrainFinder(
 
         const route =
             train.route || [];
+        console.log("STEP 4 PASSED");
 
         const result =
             buildRouteScore(
@@ -781,6 +784,7 @@ async function smartTrainFinder(
                 station
 
             );
+        console.log("STEP 5 PASSED");
 
         train.routeScore =
             result.score;
@@ -822,6 +826,7 @@ async function smartTrainFinder(
         );
 
     }
+    console.log("STEP 3 PASSED");
 
     //------------------------------------------------
     // Step-4
