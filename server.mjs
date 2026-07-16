@@ -699,6 +699,97 @@ async function fetchCandidateRoutes(candidates){
 
 }
 // ==========================================
+// FETCH ROUTES FOR CANDIDATE TRAINS
+// ==========================================
+async function fetchCandidateRoutes(candidates = []) {
+
+    if (!Array.isArray(candidates) || candidates.length === 0) {
+        return candidates;
+    }
+
+    for (const train of candidates) {
+
+        try {
+
+            console.log(
+                "ROUTE FETCH:",
+                train.number,
+                train.name
+            );
+
+            const url =
+                `https://www.railyatri.in/live-train-status/${train.number}`;
+
+            const response =
+                await fetch(url);
+
+            const html =
+                await response.text();
+
+            const match =
+                html.match(
+                    /<script id="__NEXT_DATA__"[^>]*>(.*?)<\/script>/s
+                );
+
+            if (!match) {
+
+                console.log(
+                    "NO __NEXT_DATA__:",
+                    train.number
+                );
+
+                train.route = [];
+
+                continue;
+
+            }
+
+            const json =
+                JSON.parse(match[1]);
+
+            const route =
+                json?.props?.pageProps?.timeTableData?.[0]?.route || [];
+
+            train.route = route;
+
+            console.log(
+                "ROUTE STATIONS:",
+                train.number,
+                route.length
+            );
+
+            if (route.length > 0) {
+
+                console.log(
+                    "FIRST:",
+                    route[0].station_name
+                );
+
+                console.log(
+                    "LAST:",
+                    route[route.length - 1].station_name
+                );
+
+            }
+
+        } catch (err) {
+
+            console.log(
+                "ROUTE FETCH ERROR:",
+                train.number,
+                err.message
+            );
+
+            train.route = [];
+
+        }
+
+    }
+
+    return candidates;
+
+}
+// ==========================================
 // SMART TRAIN FINDER 
 // ==========================================
 
