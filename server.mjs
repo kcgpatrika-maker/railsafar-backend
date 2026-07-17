@@ -1,14 +1,10 @@
 import express from "express";
 import cors from "cors";
 import { parseRailQuery } from "./rail-parser.mjs";
-import {
-    buildRouteScore,
-    selectBestTrain
-} from "./route-matcher.js";
+import { buildRouteScore, selectBestTrain} from "./route-matcher.js";
 const app = express();
 
 app.use(cors());
-
 app.use(express.json());
 
 // LIVE STATUS PARSER
