@@ -614,7 +614,7 @@ console.log(
 
 );
 
-return candidateTrains;
+return candidateTrains.slice(0, 3);
   } catch (error) {
     console.log("TRAIN SEARCH ERROR:", error.message);
     return null;
