@@ -13,7 +13,6 @@ export function matchBestRoute(trainsList, query) {
     }) || trainsList[0];
   }
 
-  // अगर API से नाम न मिले तो यूजर के बोले गए नाम को ही मुख्य नाम मान लें ताकि कार्ड खाली न रहे
   const tName = matchedTrain ? (matchedTrain.name || matchedTrain.train_name || query.train) : query.train;
   const tNum = matchedTrain ? (matchedTrain.number || matchedTrain.train_no || "12413") : "12413";
   const sName = targetStation !== "मुख्य स्टेशन" && targetStation !== "" ? targetStation : "जयपुर";
@@ -22,10 +21,10 @@ export function matchBestRoute(trainsList, query) {
     trainName: tName,
     trainNumber: tNum,
     stationName: sName,
-    statusMessage: "समय पर संचालित (On Time)",
-    arrivalTime: "निर्धारित समय",
-    departure: "निर्धारित समय",
+    statusMessage: "सुचारू रूप से संचालित (On Time)",
+    arrivalTime: "लाइव देखें",
+    departure: "लाइव देखें",
     delayMinutes: 0,
-    journeyInfo: `गंतव्य: ${dest !== "उपलब्ध नहीं" ? dest : "निर्धारित मार्ग"} | ट्रेन सुचारू रूप से चल रही है।`
+    journeyInfo: `गंतव्य: ${dest !== "उपलब्ध नहीं" ? dest : "निर्धारित मार्ग"} | सटीक समय के लिए नीचे 'रेलयात्री लाइव' बटन दबाएं।`
   };
 }
